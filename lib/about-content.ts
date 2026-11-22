@@ -253,12 +253,7 @@ export function getAboutContent(map: SettingMap): AboutContent {
     skillTitle: parseStyledSetting(map[ABOUT_SETTING_KEYS.skillTitle], ABOUT_FALLBACKS.skillTitle),
     cta: parseStyledSetting(map[ABOUT_SETTING_KEYS.cta], ABOUT_FALLBACKS.cta),
     image: getFirstSetting(map, ABOUT_SETTING_KEYS.image),
-    skills: skillKeys.map((key, index) =>
-      parseStyledSetting(
-        map[key],
-        ABOUT_FALLBACKS[`skill${index + 1}` as keyof typeof ABOUT_FALLBACKS]
-      )
-    ),
+    skills: skillKeys.map(key => parseStyledSetting(map[key], '')).filter(skill => skill.value.trim()),
   };
 }
 
@@ -929,6 +924,7 @@ function formatMonthYear(month: string, year: string) {
 }
 
 function monthsBetween(item: ExperienceItem) {
+  if (!item.startYear.trim() || (!item.isCurrent && !item.endYear.trim())) return 0;
   const startYear = Number(item.startYear);
   const endYear = item.isCurrent ? new Date().getFullYear() : Number(item.endYear);
   const startMonth = monthIndex(item.startMonth || '01');
@@ -970,7 +966,7 @@ export function getExperienceDateRange(item: ExperienceItem) {
     return '';
   }
 
-  return `${start || 'Start'} – ${end || 'Present'}`;
+  return [start, end].filter(Boolean).join(' – ');
 }
 
 export function getVisibleExperienceItems(

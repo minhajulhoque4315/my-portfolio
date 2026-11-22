@@ -1392,7 +1392,9 @@ export default function AdminCategories() {
                 const visible = isCategoryVisible(category);
                 const featured = isCategoryFeatured(category);
                 const thumbnail = getCategoryThumbnail(category);
-                const shownOnPortfolio = isCategoryShownOnPortfolio(category);
+                const shownOnPortfolio = visible && isCategoryShownOnPortfolio(category);
+                const shownOnHomepage = visible && category.show_on_homepage !== false;
+                const shownAsFilter = visible && category.show_filter_chip !== false;
 
                 return (
                   <article
@@ -1461,9 +1463,9 @@ export default function AdminCategories() {
                       </div>
                     </div>
                     <div style={{ display: 'grid', gap: 8, color: tokens.muted, fontSize: 12 }}>
-                      <div>Homepage: <strong style={{ color: category.show_on_homepage === false ? tokens.subtle : tokens.successText }}>{category.show_on_homepage === false ? 'Hidden' : 'Visible'}</strong></div>
+                      <div>Homepage: <strong style={{ color: shownOnHomepage ? tokens.successText : tokens.subtle }}>{shownOnHomepage ? 'Visible' : 'Hidden'}</strong></div>
                       <div>Portfolio page: <strong style={{ color: shownOnPortfolio ? tokens.successText : tokens.subtle }}>{shownOnPortfolio ? 'Visible' : 'Hidden'}</strong></div>
-                      <div>Filter chip: <strong style={{ color: category.show_filter_chip === false ? tokens.subtle : tokens.successText }}>{category.show_filter_chip === false ? 'Hidden' : 'Visible'}</strong></div>
+                      <div>Filter chip: <strong style={{ color: shownAsFilter ? tokens.successText : tokens.subtle }}>{shownAsFilter ? 'Visible' : 'Hidden'}</strong></div>
                       <div>Sort order: <strong style={{ color: tokens.text }}>{category.order_num}</strong></div>
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>

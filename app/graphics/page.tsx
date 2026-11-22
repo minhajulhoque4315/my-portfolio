@@ -20,7 +20,7 @@ type Graphic = {
 export default function GraphicsPage() {
   const [graphics, setGraphics] = useState<Graphic[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState('সব');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [selected, setSelected] = useState<Graphic | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +44,7 @@ export default function GraphicsPage() {
     void load();
   }, []);
 
-  const filtered = activeCategory === 'সব'
+  const filtered = activeCategory === 'All'
     ? graphics
     : graphics.filter(g => g.category === activeCategory);
 
@@ -93,13 +93,13 @@ export default function GraphicsPage() {
           Graphics Design
         </h1>
         <p style={{ fontSize: 15, color: '#555', maxWidth: 440, margin: '0 auto' }}>
-          Poster, Logo, Banner — সব ধরনের গ্রাফিক্স ডিজাইনের সংগ্রহ
+          Explore posters, logos, banners, and other graphic design work.
         </p>
       </div>
 
       {/* Category Filter */}
       <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', padding: '0 24px 48px' }}>
-        {['সব', ...categories].map(cat => (
+        {['All', ...categories].map(cat => (
           <button key={cat} onClick={() => setActiveCategory(cat)}
             style={{
               background: activeCategory === cat ? '#fff' : 'transparent',
@@ -119,12 +119,12 @@ export default function GraphicsPage() {
       {/* Graphics Grid */}
       <div style={{ maxWidth: 1300, margin: '0 auto', padding: '0 24px 100px' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', color: '#333', padding: '80px 0', fontSize: 14 }}>লোড হচ্ছে...</div>
+          <div style={{ textAlign: 'center', color: '#333', padding: '80px 0', fontSize: 14 }}>Loading...</div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#333', padding: '80px 0' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🎨</div>
-            <div style={{ fontSize: 14 }}>এখনো কোনো গ্রাফিক্স যোগ করা হয়নি</div>
-            <div style={{ fontSize: 12, color: '#222', marginTop: 8 }}>Admin Panel থেকে ছবি যোগ করুন</div>
+            <div style={{ fontSize: 14 }}>No graphics have been published yet.</div>
+            <div style={{ fontSize: 12, color: '#222', marginTop: 8 }}>Check back for new work.</div>
           </div>
         ) : (
           <div style={{

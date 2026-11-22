@@ -516,6 +516,7 @@ export default function AdminExperiencesPage() {
                           </AdminField>
                           <AdminField label="Start year">
                             <input value={item.startYear} onChange={event => updateExperienceItem(item.id, { startYear: event.target.value })} style={inputStyle} placeholder="2025" />
+                            {!item.startYear.trim() && <span role="status">Start year is missing.</span>}
                           </AdminField>
                           <AdminField label="End month">
                             <select value={item.endMonth} onChange={event => updateExperienceItem(item.id, { endMonth: event.target.value })} style={inputStyle} disabled={item.isCurrent}>
@@ -525,6 +526,7 @@ export default function AdminExperiencesPage() {
                           </AdminField>
                           <AdminField label="End year">
                             <input value={item.endYear} onChange={event => updateExperienceItem(item.id, { endYear: event.target.value })} style={inputStyle} disabled={item.isCurrent} placeholder="2026" />
+                            {!item.isCurrent && !item.endYear.trim() && <span role="status">End year is missing.</span>}
                           </AdminField>
                           <label style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 24 }}>
                             <input
@@ -543,6 +545,7 @@ export default function AdminExperiencesPage() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
                           <AdminField label="Location">
                             <input value={item.location} onChange={event => updateExperienceItem(item.id, { location: event.target.value })} style={inputStyle} placeholder="Dhaka, Bangladesh" />
+                            {!item.location.trim() && <span role="status">Location is missing.</span>}
                           </AdminField>
                           <AdminField label="Location type">
                             <select value={item.locationType} onChange={event => updateExperienceItem(item.id, { locationType: event.target.value as ExperienceLocationType })} style={inputStyle}>

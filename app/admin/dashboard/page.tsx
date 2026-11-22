@@ -7,6 +7,7 @@ import AdminShell from '@/components/admin/AdminShell';
 import { useTheme } from '@/components/ThemeProvider';
 import { adminCountRows } from '@/lib/admin-data-client';
 import type { ClientProject, ContactLead, CreativeBrief } from '@/lib/crm';
+import { isActiveProject } from '@/lib/crm-shared';
 
 type DashboardState = {
   briefs: CreativeBrief[];
@@ -89,17 +90,7 @@ export default function AdminDashboardPage() {
 
   const metrics = useMemo(() => {
     const unreadLeads = state.leads.filter(lead => !lead.read && !lead.archived).length;
-    const activeProjects = state.projects.filter(project =>
-      [
-        'Accepted',
-        'In Progress',
-        'First Draft Sent',
-        'Revision',
-        'Final Delivery',
-        'Brief Received',
-        'Quotation Sent',
-      ].includes(project.currentStatus)
-    ).length;
+    const activeProjects = state.projects.filter(isActiveProject).length;
     const pendingBriefs = state.briefs.filter(brief => brief.status !== 'submitted').length;
     const completedProjects = state.projects.filter(
       project => project.currentStatus === 'Completed'
@@ -176,9 +167,7 @@ export default function AdminDashboardPage() {
     {
       label: 'Brief workflow',
       value: state.briefs.length > 0 ? `${state.briefs.length} brief${state.briefs.length === 1 ? '' : 's'}` : 'Ready',
-      meta: state.briefs.filter(brief => brief.status === 'submitted').length > 0
-        ? `${state.briefs.filter(brief => brief.status === 'submitted').length} submitted`
-        : 'No submitted briefs yet',
+      meta: `${state.briefs.filter(brief => brief.status === 'submitted').length} submitted · ${state.briefs.filter(brief => brief.status !== 'submitted').length} in other stages`,
     },
     {
       label: 'Content library',
@@ -245,9 +234,9 @@ export default function AdminDashboardPage() {
           >
             <div style={{ color: muted, fontSize: 13, marginBottom: 10 }}>{metric.label}</div>
             <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-0.06em', marginBottom: 8 }}>
-              {state.loading ? '...' : metric.value}
+              {state.loading ? <span aria-label="Loading" className="inline-block h-8 w-12 animate-pulse rounded bg-current opacity-10" /> : metric.value}
             </div>
-            <div style={{ color: subtle, fontSize: 12 }}>{metric.note}</div>
+            <div style={{ color: subtle, fontSize: 12 }}>{state.loading ? null : metric.note}</div>
           </article>
         ))}
       </section>
@@ -367,10 +356,10 @@ export default function AdminDashboardPage() {
                       textTransform: 'uppercase',
                     }}
                   >
-                    {item.value}
+                    {state.loading ? <span aria-label="Loading" className="inline-block h-4 w-12 animate-pulse rounded bg-current opacity-10" /> : item.value}
                   </span>
                 </div>
-                <div style={{ color: muted, fontSize: 13, lineHeight: 1.7 }}>{item.meta}</div>
+                <div style={{ color: muted, fontSize: 13, lineHeight: 1.7 }}>{state.loading ? null : item.meta}</div>
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import PortfolioPreviewModal from '@/components/portfolio/PortfolioPreviewModal';
@@ -403,6 +403,8 @@ export default function PortfolioShowcase({
   pageBuilder,
 }: PortfolioShowcaseProps) {
   const router = useRouter();
+  const [navigationPending, startNavigation] = useTransition();
+  const [navigationItemId, setNavigationItemId] = useState<PortfolioPreviewItem['id'] | null>(null);
   const { theme } = useTheme();
   const dark = theme === 'dark';
   const homepageConfig = homepageSettings || DEFAULT_HOMEPAGE_PORTFOLIO_SETTINGS;
@@ -981,7 +983,10 @@ export default function PortfolioShowcase({
 
   function handleItemAction(item: PortfolioPreviewItem) {
     if (variant === 'page') {
-      router.push(getPortfolioItemDetailPath(item, getPortfolioItemMeta(item, itemMetaConfig)));
+      setNavigationItemId(item.id);
+      startNavigation(() => {
+        router.push(getPortfolioItemDetailPath(item, getPortfolioItemMeta(item, itemMetaConfig)));
+      });
       return;
     }
 
@@ -1483,7 +1488,7 @@ export default function PortfolioShowcase({
                       ...mobileChipButtonStyle,
                     }}
                   >
-                    সব ({tabItems.length})
+                    All categories ({tabItems.length})
                   </button>
                 ) : null}
                 {categoriesForTab.map(category => {
@@ -1647,10 +1652,10 @@ export default function PortfolioShowcase({
                         marginBottom: 8,
                       }}
                     >
-                      Homepage category preview-র জন্য কোনো category পাওয়া যায়নি
+                      No categories are available.
                     </div>
                     <div style={{ fontSize: 14, color: muted }}>
-                      Category visibility, content type, বা item visibility settings চেক করুন।
+                      Check back for new work.
                     </div>
                   </div>
                 ) : (
@@ -2010,13 +2015,13 @@ export default function PortfolioShowcase({
                   }}
                 >
                   {variant === 'page'
-                    ? 'এই ফিল্টারে কোনো কাজ পাওয়া যায়নি'
-                    : 'Homepage preview-র জন্য এখনো কোনো কাজ নির্বাচিত হয়নি'}
+                    ? 'No work matches these filters.'
+                    : 'No work has been selected for this preview.'}
                 </div>
                 <div style={{ fontSize: 14, color: muted }}>
                   {variant === 'page'
-                    ? 'ক্যাটাগরি বা tab বদলে আবার দেখুন।'
-                    : 'Homepage Portfolio Builder, Video Manager বা Graphics Manager থেকে selection control করুন।'}
+                    ? 'Try a different category or tab.'
+                    : 'Check back for new work.'}
                 </div>
                 </div>
               ) : (
@@ -2224,6 +2229,7 @@ export default function PortfolioShowcase({
                                 : `Open preview for ${item.title}`
                             }
                             onClick={() => handleItemAction(item)}
+                            aria-busy={navigationPending && navigationItemId === item.id}
                             onMouseEnter={() => {
                               setFocusItemKey(focusKey);
                               setHoverPreviewKey(focusKey);
@@ -2286,7 +2292,9 @@ export default function PortfolioShowcase({
                                 !useMasonryLayout && leadCard && safeColumnCount > 1
                                   ? `span ${Math.min(2, safeColumnCount)}`
                                   : undefined,
-                              opacity: dimmed ? 0.56 : 1,
+                              opacity: navigationPending && navigationItemId === item.id
+                                ? 0.65
+                                : dimmed ? 0.56 : 1,
                               transform:
                                 showHoverOverlay && focusMatch
                                   ? 'translateY(-6px)'

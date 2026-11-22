@@ -48,7 +48,7 @@ export function buildPageMetadata(
     title:
       pageId === 'home'
         ? {
-            default: SITE_CONFIG.title,
+            default: effective.seoTitle,
             template: `%s | ${SITE_CONFIG.siteName}`,
           }
         : {
@@ -87,7 +87,7 @@ export function buildPageMetadata(
       },
     },
     openGraph: {
-      title: pageId === 'home' ? SITE_CONFIG.title : effective.ogTitle,
+      title: effective.ogTitle,
       description: effective.ogDescription,
       url: canonical || undefined,
       siteName: SITE_CONFIG.siteName,
@@ -106,7 +106,7 @@ export function buildPageMetadata(
     },
     twitter: {
       card: effective.twitterCard,
-      title: pageId === 'home' ? SITE_CONFIG.title : effective.ogTitle,
+      title: effective.ogTitle,
       description: pageId === 'home' ? SITE_CONFIG.shortDescription : effective.ogDescription,
       images: imageUrl ? [imageUrl] : undefined,
     },
@@ -140,7 +140,7 @@ export function buildPortfolioCategoryMetadata(
   const routeType = params.sourceType === 'graphic' ? 'graphics' : params.sourceType;
   const path = `/portfolio/category/${routeType}/${params.slug}`;
   const canonical = params.canonicalUrl ? getCanonicalUrl(params.canonicalUrl) : getCanonicalUrl(path);
-  const title = params.seoTitle || `${categoryTitle} ${typeLabel} | ${SITE_CONFIG.siteName}`;
+  const title = params.seoTitle || `${categoryTitle} | ${SITE_CONFIG.siteName}`;
   const description =
     params.seoDescription ||
     params.categoryDescription ||

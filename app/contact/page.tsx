@@ -125,7 +125,7 @@ export default function ContactPage() {
     () => getVisibleContactFieldKeys(form.contactPurpose),
     [form.contactPurpose]
   );
-  const canSubmit = !submitting && Object.keys(validationErrors).length === 0;
+  const canSubmit = !submitting;
   const minDate = useMemo(() => getTodayDateInputValue(), []);
 
   function updateField<K extends keyof ContactFormState>(
@@ -209,7 +209,7 @@ export default function ContactPage() {
             ...Object.fromEntries(Object.keys(serverErrors).map(key => [key, true])),
           }));
         }
-        throw new Error(result.error || 'বার্তা পাঠানো যায়নি।');
+        throw new Error(result.error || 'The message could not be sent.');
       }
 
       setSent(true);
@@ -221,7 +221,7 @@ export default function ContactPage() {
       setTouched({});
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'বার্তা পাঠানো যায়নি।';
+        error instanceof Error ? error.message : 'The message could not be sent.';
       setSubmitState({ type: 'error', message });
     } finally {
       setSubmitting(false);
@@ -359,7 +359,7 @@ export default function ContactPage() {
             Contact page is currently disabled.
           </h1>
           <p style={{ margin: 0, color: muted, lineHeight: 1.75 }}>
-            Admin থেকে Contact Builder ব্যবহার করে visibility চালু করুন।
+            The contact page is currently unavailable.
           </p>
         </div>
       </main>
@@ -968,7 +968,7 @@ export default function ContactPage() {
                 fontSize: 14,
               }}
             >
-              আরেকটি বার্তা পাঠান
+              Send another message
             </button>
           </div>
         ) : (
@@ -1495,7 +1495,7 @@ export default function ContactPage() {
                   boxShadow: canSubmit ? '0 18px 38px rgba(37,99,235,0.26)' : 'none',
                 }}
               >
-                {submitting ? 'পাঠানো হচ্ছে...' : section.submitButtonText}
+                {submitting ? 'Sending...' : section.submitButtonText}
               </button>
             </form>
           </>

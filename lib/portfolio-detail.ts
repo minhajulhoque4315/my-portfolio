@@ -86,10 +86,10 @@ export const getPortfolioDetailData = cache(
 
     const meta = getPortfolioItemMeta(item, metaConfig);
     const currentIndex = items.findIndex(candidate => candidate.id === item.id);
-    const previousItem = currentIndex > 0 ? items[currentIndex - 1] : items[items.length - 1] || null;
+    const previousItem = currentIndex > 0 ? items[currentIndex - 1] : null;
     const nextItem =
-      currentIndex >= 0 && items.length > 1
-        ? items[(currentIndex + 1) % items.length]
+      currentIndex >= 0 && currentIndex + 1 < items.length
+        ? items[currentIndex + 1]
         : null;
     const relatedItems = items
       .filter(candidate => candidate.id !== item.id)

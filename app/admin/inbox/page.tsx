@@ -10,6 +10,7 @@ import {
 } from '@/components/admin/admin-ui';
 import {
   buildWhatsAppUrl,
+  isActiveProject,
   LEAD_CATEGORY_OPTIONS,
   LEAD_PRIORITY_OPTIONS,
   LEAD_STATUS_OPTIONS,
@@ -607,7 +608,7 @@ export default function AdminInboxPage() {
   }
 
   const stats = {
-    activeProjects: state.leads.filter(lead => lead.category === 'Active Project').length,
+    activeProjects: state.projects.filter(isActiveProject).length,
     important: state.leads.filter(lead => lead.important).length,
     unread: state.leads.filter(lead => !lead.read && !lead.archived).length,
   };

@@ -311,7 +311,7 @@ export default function HomePageClient({
       ),
     [aboutSystem.experience]
   );
-  const heroStats = toEnabledStats(hero.stats).slice(0, 3);
+  const heroStats = toEnabledStats(statsSection.items).filter(item => !/^stats-(clients|satisfaction)$/.test(item.id)).slice(0, 3);
   const heroCtaIsStacked =
     hero.ctaLayout === 'stack' || (hero.ctaLayout === 'responsive' && isMobile);
   const heroCtaJustify =
@@ -327,12 +327,13 @@ export default function HomePageClient({
         ? 'flex-end'
         : 'flex-start';
   const statsItems = toEnabledStats(statsSection.items);
-  const heroUsesSplitLayout = !isMobile && hero.layout === 'split';
-  const heroContentOrder = heroUsesSplitLayout && hero.alignment === 'right' ? 2 : 1;
-  const heroFloatingOrder = heroContentOrder === 2 ? 1 : 2;
   const currentHeroImage = isMobile
     ? hero.mobileImage || hero.desktopImage
     : hero.desktopImage || hero.mobileImage;
+  const separateHeroMedia = !isMobile && Boolean(currentHeroImage);
+  const heroUsesSplitLayout = !isMobile && (hero.layout === 'split' || separateHeroMedia);
+  const heroContentOrder = heroUsesSplitLayout && hero.alignment === 'right' ? 2 : 1;
+  const heroFloatingOrder = heroContentOrder === 2 ? 1 : 2;
   const showreelEmbedUrl = toPrivacyEnhancedYouTubeUrl(showreelSection.videoUrl);
   const heroMaxWidth = getSectionMaxWidth(hero.width, homepageBuilder.global.contentWidth);
   const heroMinHeight = getHeroHeightPreset(hero.heightPreset, isMobile);
@@ -409,7 +410,9 @@ export default function HomePageClient({
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          inset: separateHeroMedia
+            ? heroContentOrder === 2 ? '0 50% 0 0' : '0 0 0 50%'
+            : 0,
           backgroundColor: '#020617',
           transform: isMobile ? 'scale(1.02)' : 'scale(1.01)',
         }}
@@ -424,7 +427,7 @@ export default function HomePageClient({
             quality={72}
             sizes="100vw"
             style={{
-              objectFit: 'cover',
+              objectFit: separateHeroMedia ? 'contain' : 'cover',
               objectPosition: isMobile ? 'center top' : '58% center',
             }}
           />
@@ -470,9 +473,7 @@ export default function HomePageClient({
           gridTemplateColumns:
             !heroUsesSplitLayout
               ? '1fr'
-              : hero.alignment === 'right'
-                ? 'minmax(420px, 1fr) minmax(360px, 520px)'
-                : 'minmax(360px, 520px) minmax(420px, 1fr)',
+              : 'repeat(2, minmax(0, 1fr))',
           alignItems:
             isMobile && hero.mobileContentPosition === 'center'
               ? 'center'
@@ -506,6 +507,7 @@ export default function HomePageClient({
             width: isMobile ? 'min(100%, 380px)' : '100%',
             maxWidth: isMobile ? 380 : heroPanelMaxWidth,
             order: heroContentOrder,
+            gridColumn: heroUsesSplitLayout ? heroContentOrder : undefined,
             justifySelf:
               heroUsesSplitLayout
                 ? hero.alignment === 'right'
@@ -794,6 +796,7 @@ export default function HomePageClient({
           <div
             style={{
               order: heroFloatingOrder,
+              gridColumn: heroFloatingOrder,
               minHeight: '100%',
               display: 'flex',
               alignItems:
@@ -1073,7 +1076,7 @@ export default function HomePageClient({
                   'radial-gradient(circle at 20% 18%, rgba(56,189,248,0.22), transparent 28%), linear-gradient(180deg, rgba(2,6,23,0) 22%, rgba(2,6,23,0.82) 100%)',
               }}
             />
-            <div
+            {homepageAbout.showStats && homepageAbout.stats.length > 0 ? <div
               style={{
                 position: 'absolute',
                 left: 18,
@@ -1100,7 +1103,7 @@ export default function HomePageClient({
                   ))}
                 </div>
               ) : null}
-            </div>
+            </div> : null}
           </div>
         </div>
       </section>

@@ -350,7 +350,7 @@ function sanitizeCta(
 export function createDefaultContactPageConfig(
   map: SettingMap = {}
 ): ContactPageConfig {
-  const email = getFirstSetting(map, 'contact_email') || 'hello@minhajulhoque.com';
+  const email = getFirstSetting(map, 'contact_email') || 'minhajulhoque6914@gmail.com';
   const phone = getFirstSetting(map, 'contact_phone') || '+880 1700-000000';
 
   return {

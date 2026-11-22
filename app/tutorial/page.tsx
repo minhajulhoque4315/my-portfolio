@@ -280,7 +280,7 @@ export default function TutorialPage() {
             Tutorial page is currently disabled.
           </h1>
           <p style={{ margin: 0, color: muted, lineHeight: 1.75 }}>
-            Admin থেকে Tutorial Builder ব্যবহার করে visibility চালু করুন।
+            Tutorials are currently unavailable.
           </p>
         </div>
       </main>
@@ -303,7 +303,10 @@ export default function TutorialPage() {
     const section = pageConfig.hero;
     const styles = section.styles;
     const center = section.alignment === 'center';
-    const statItems = section.stats.filter(item => item.enabled).sort((a, b) => a.order - b.order);
+    const statItems = section.stats
+      .filter(item => item.enabled)
+      .map(item => item.id === 'tutorials' ? { ...item, value: String(visibleTutorials.length) } : item)
+      .sort((a, b) => a.order - b.order);
 
     return (
       <section
@@ -386,7 +389,7 @@ export default function TutorialPage() {
               }),
             }}
           >
-            {section.title}
+            {section.title === 'Tutorial' ? 'Tutorials' : section.title}
           </h1>
 
           {section.subtitle ? (

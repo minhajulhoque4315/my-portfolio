@@ -232,7 +232,11 @@ export default function GlobalFooter({
                   .map(item => (
                     <div key={item.id}>
                       {item.icon ? `${item.icon} ` : ''}
-                      {item.value}
+                      {item.value.includes('@') ? (
+                        <FooterLink href={`mailto:${item.value.trim()}`}>{item.value}</FooterLink>
+                      ) : /^\+?[\d\s().-]{7,}$/.test(item.value.trim()) ? (
+                        <FooterLink href={`tel:${item.value.replace(/[^+\d]/g, '')}`}>{item.value}</FooterLink>
+                      ) : item.value}
                     </div>
                   ))}
               </div>

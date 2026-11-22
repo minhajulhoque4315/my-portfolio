@@ -124,7 +124,7 @@ export default function PortfolioCategoryPage() {
   const scopedPageSettings: PortfolioPageSettings = {
     ...pageSettings,
     title: categoryTitle,
-    subtitle: `${typeLabel} category থেকে ${categoryItems.length}টি selected work দেখুন।`,
+    subtitle: `Explore ${categoryItems.length} selected works in ${typeLabel}.`,
     tabs: {
       all: {
         ...pageSettings.tabs.all,

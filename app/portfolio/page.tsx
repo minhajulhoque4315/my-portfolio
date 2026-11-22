@@ -112,7 +112,7 @@ export default function PortfolioPage() {
             Portfolio page is currently disabled.
           </h1>
           <p style={{ margin: 0, color: dark ? '#94a3b8' : '#475569', lineHeight: 1.75 }}>
-            Admin থেকে Portfolio Page Builder ব্যবহার করে visibility চালু করুন।
+            The portfolio is currently unavailable.
           </p>
         </div>
       </main>

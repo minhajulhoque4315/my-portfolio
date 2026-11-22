@@ -351,17 +351,17 @@ export function createDefaultHomepageBuilderConfig(
     map?.hero_subtitle,
     'Graphics & Video Editor helping ideas reach people visually.'
   ).value;
-  const heroPrimary = parseStyledSetting(map?.cta_button, 'Portfolio দেখুন').value;
+  const heroPrimary = parseStyledSetting(map?.cta_button, 'View Portfolio').value;
   const showreelEyebrow = parseStyledSetting(map?.showreel_eyebrow, 'Featured').value;
-  const showreelTitle = parseStyledSetting(map?.showreel_title, 'আমার Showreel').value;
+  const showreelTitle = parseStyledSetting(map?.showreel_title, 'My Showreel').value;
   const stat1Label = parseStyledSetting(map?.stat1_label, 'Projects').value;
   const stat2Label = parseStyledSetting(map?.stat2_label, 'Clients').value;
   const stat3Label = parseStyledSetting(map?.stat3_label, 'Years Crafting').value;
-  const contactEmail = getFirstSetting(map || {}, 'contact_email') || 'hello@minhajulhoque.com';
-  const contactPhone = getFirstSetting(map || {}, 'contact_phone') || '+880 1XXX-XXXXXX';
+  const contactEmail = getFirstSetting(map || {}, 'contact_email') || 'minhajulhoque6914@gmail.com';
+  const contactPhone = getFirstSetting(map || {}, 'contact_phone') || '+8801603144248';
   const footerCopy = parseStyledSetting(
     map?.footer_copy,
-    '© 2025 Md. Minhajul Hoque. All rights reserved.'
+    '© 2026 Md. Minhajul Hoque. All rights reserved.'
   ).value;
   const heroImages = map ? getHeroImages(map) : { desktop: '', mobile: '' };
   const projectValue = `${runtimeStats.projectCount ?? 120}+`;
@@ -460,9 +460,9 @@ export function createDefaultHomepageBuilderConfig(
       width: 'narrow',
       spacing: 'balanced',
       icon: '🤝',
-      title: 'একসাথে কাজ করি?',
-      subtitle: 'Video Editing, Graphics Design বা যেকোনো Creative প্রজেক্টের জন্য যোগাযোগ করুন।',
-      primaryButtonText: 'যোগাযোগ করুন',
+      title: 'Let\'s work together',
+      subtitle: 'Get in touch for video editing, graphic design, or other creative projects.',
+      primaryButtonText: 'Get in touch',
       primaryButtonLink: '/contact',
       secondaryButtonText: '📱 WhatsApp',
       secondaryButtonLink: 'https://wa.me/8801885080118',
@@ -492,7 +492,7 @@ export function createDefaultHomepageBuilderConfig(
       showContact: true,
       showSocial: true,
       quickLinksTitle: 'Quick Links',
-      contactTitle: 'যোগাযোগ',
+      contactTitle: 'Contact',
       socialTitle: 'Social',
       quickLinks: [
         { id: 'footer-link-1', label: 'Portfolio', url: '/portfolio', enabled: true, order: 1 },
@@ -508,7 +508,7 @@ export function createDefaultHomepageBuilderConfig(
       contactItems: [
         { id: 'footer-contact-1', icon: '📧', label: 'Email', value: contactEmail, enabled: true, order: 1 },
         { id: 'footer-contact-2', icon: '📱', label: 'Phone', value: contactPhone, enabled: true, order: 2 },
-        { id: 'footer-contact-3', icon: '📍', label: 'Location', value: 'Mirpur 10, Dhaka', enabled: true, order: 3 },
+        { id: 'footer-contact-3', icon: '📍', label: 'Location', value: 'Dhaka, Bangladesh', enabled: true, order: 3 },
       ],
       copyrightText: footerCopy,
       noteText: 'Made with ❤️ in Bangladesh',

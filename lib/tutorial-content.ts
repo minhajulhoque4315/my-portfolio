@@ -272,11 +272,11 @@ export function createDefaultTutorialPageConfig(tutorialCount = 0): TutorialPage
       width: 'wide',
       spacing: 'balanced',
       label: 'Learning Hub',
-      title: 'শিখুন, refine করুন, আর level up করুন',
+      title: 'Tutorials',
       subtitle:
-        'Video editing, design workflow, motion clarity এবং creator-focused practical tutorials.',
+        'Practical tutorials on video editing, design workflows, and motion clarity.',
       introText:
-        'বাংলায় clear explanation, category-based browsing, এবং polished preview experience দিয়ে tutorials সাজানো আছে যেন learning flow clean থাকে।',
+        'Browse tutorials by category and preview lessons before watching.',
       showStats: true,
       showPrimaryButton: true,
       primaryButtonText: 'Contact Me',
@@ -284,7 +284,7 @@ export function createDefaultTutorialPageConfig(tutorialCount = 0): TutorialPage
       stats: [
         { id: 'tutorials', value: `${tutorialCount}+`, label: 'Tutorials', enabled: true, order: 1 },
         { id: 'free', value: '100%', label: 'Free Content', enabled: true, order: 2 },
-        { id: 'language', value: 'বাংলা', label: 'Language', enabled: true, order: 3 },
+        { id: 'language', value: 'Bengali', label: 'Language', enabled: true, order: 3 },
       ],
       styles: createDefaultBuilderSectionStyles(),
     },
@@ -305,10 +305,10 @@ export function createDefaultTutorialPageConfig(tutorialCount = 0): TutorialPage
       showLevelFilters: true,
       showAllCategory: true,
       showAllLevel: true,
-      allCategoryLabel: 'সব',
-      allLevelLabel: 'সব লেভেল',
-      emptyTitle: 'এখনও কোনো tutorial পাওয়া যায়নি',
-      emptyDescription: 'Admin panel থেকে tutorial যোগ করুন বা filter বদলে আবার দেখুন।',
+      allCategoryLabel: 'All categories',
+      allLevelLabel: 'All levels',
+      emptyTitle: 'No tutorials found',
+      emptyDescription: 'Try another filter or check back for new lessons.',
       styles: createDefaultBuilderSectionStyles(),
     },
     cta: {
@@ -320,7 +320,7 @@ export function createDefaultTutorialPageConfig(tutorialCount = 0): TutorialPage
       label: 'Want a structured creative workflow?',
       title: 'Need one-to-one creative support?',
       description:
-        'Tutorial দেখে যদি project execution, system setup, বা premium delivery support চান, contact page থেকে brief পাঠান।',
+        'For help with project execution, setup, or delivery, send a brief through the contact page.',
       showButton: true,
       buttonText: 'Start a Project',
       buttonLink: '/contact',

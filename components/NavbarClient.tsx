@@ -374,9 +374,7 @@ export default function NavbarClient({
               lineHeight: 1,
               color: design.logo.brandColor,
               whiteSpace: 'nowrap',
-              minWidth: 0,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              flexShrink: 0,
             }}
           >
             {branding.textLogo}

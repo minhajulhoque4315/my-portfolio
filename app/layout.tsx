@@ -4,10 +4,9 @@ import { connection } from 'next/server';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Navbar from '@/components/Navbar';
-import GlobalRouteLoader from '@/components/GlobalRouteLoader';
+import PageViewTracker from '@/components/PageViewTracker';
 import { getServerGlobalSettings } from '@/lib/server-site-settings';
 import { buildPageMetadata, buildStructuredData } from '@/lib/site-metadata';
-import { getPremiumLoaderConfig } from '@/lib/premium-loader';
 
 function toJsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, '\\u003c');
@@ -26,22 +25,15 @@ export default async function RootLayout({
 }) {
   await connection();
   const settings = await getServerGlobalSettings();
-  const loaderConfig = await getPremiumLoaderConfig();
   const structuredData = buildStructuredData(settings);
 
   return (
-    <html lang="bn" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <ThemeProvider>
           <Navbar />
+          <PageViewTracker />
           {children}
-          {loaderConfig.settings.loader.enabled ? (
-            <GlobalRouteLoader
-              images={loaderConfig.images}
-              loader={loaderConfig.settings.loader}
-              mode={loaderConfig.settings.theme.defaultTheme}
-            />
-          ) : null}
         </ThemeProvider>
         {structuredData.map((entry, index) => (
           <script

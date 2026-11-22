@@ -731,7 +731,9 @@ export default function AdminHomepageBuilderPage() {
     getHomepageConfigForItem(item, portfolioConfig.itemConfig).showOnHomepage
   ).length;
   const nextHomepageOrder = nextOrderFromConfig(items, portfolioConfig.itemConfig);
-  const activeCategoriesCount = categoryRows.filter(entry => entry.homepage.enabled).length;
+  const activeCategoriesCount = categoryRows.filter(({ category, homepage }) =>
+    (category.visibility_status ?? category.active ?? true) && homepage.enabled
+  ).length;
   const homepageAbout = aboutSystem?.homepage;
   const sectionEntries = useMemo(
     () =>

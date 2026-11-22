@@ -139,7 +139,7 @@ export default function AboutPage() {
           fontFamily: "'Inter', system-ui, sans-serif",
         }}
       >
-        লোড হচ্ছে...
+        Loading...
       </div>
     );
   }

@@ -72,6 +72,13 @@ export const LEAD_PRIORITY_OPTIONS = ['Low', 'Medium', 'High', 'Urgent'] as cons
 
 export const PREFERRED_CONTACT_OPTIONS = ['Email', 'Mobile', 'WhatsApp'] as const;
 
+export function isActiveProject(project: { currentStatus: string }) {
+  return [
+    'Accepted', 'In Progress', 'First Draft Sent', 'Revision',
+    'Final Delivery', 'Brief Received', 'Quotation Sent',
+  ].includes(project.currentStatus);
+}
+
 export const PROJECT_STATUS_OPTIONS = [
   'New',
   'Brief Received',
