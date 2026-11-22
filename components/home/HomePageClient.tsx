@@ -327,13 +327,12 @@ export default function HomePageClient({
         ? 'flex-end'
         : 'flex-start';
   const statsItems = toEnabledStats(statsSection.items);
+  const heroUsesSplitLayout = !isMobile && hero.layout === 'split';
+  const heroContentOrder = heroUsesSplitLayout && hero.alignment === 'right' ? 2 : 1;
+  const heroFloatingOrder = heroContentOrder === 2 ? 1 : 2;
   const currentHeroImage = isMobile
     ? hero.mobileImage || hero.desktopImage
     : hero.desktopImage || hero.mobileImage;
-  const separateHeroMedia = !isMobile && Boolean(currentHeroImage);
-  const heroUsesSplitLayout = !isMobile && (hero.layout === 'split' || separateHeroMedia);
-  const heroContentOrder = heroUsesSplitLayout && hero.alignment === 'right' ? 2 : 1;
-  const heroFloatingOrder = heroContentOrder === 2 ? 1 : 2;
   const showreelEmbedUrl = toPrivacyEnhancedYouTubeUrl(showreelSection.videoUrl);
   const heroMaxWidth = getSectionMaxWidth(hero.width, homepageBuilder.global.contentWidth);
   const heroMinHeight = getHeroHeightPreset(hero.heightPreset, isMobile);
@@ -410,9 +409,7 @@ export default function HomePageClient({
       <div
         style={{
           position: 'absolute',
-          inset: separateHeroMedia
-            ? heroContentOrder === 2 ? '0 50% 0 0' : '0 0 0 50%'
-            : 0,
+          inset: 0,
           backgroundColor: '#020617',
           transform: isMobile ? 'scale(1.02)' : 'scale(1.01)',
         }}
@@ -427,7 +424,7 @@ export default function HomePageClient({
             quality={72}
             sizes="100vw"
             style={{
-              objectFit: separateHeroMedia ? 'contain' : 'cover',
+              objectFit: 'cover',
               objectPosition: isMobile ? 'center top' : '58% center',
             }}
           />
@@ -473,7 +470,9 @@ export default function HomePageClient({
           gridTemplateColumns:
             !heroUsesSplitLayout
               ? '1fr'
-              : 'repeat(2, minmax(0, 1fr))',
+              : hero.alignment === 'right'
+                ? 'minmax(420px, 1fr) minmax(360px, 520px)'
+                : 'minmax(360px, 520px) minmax(420px, 1fr)',
           alignItems:
             isMobile && hero.mobileContentPosition === 'center'
               ? 'center'
@@ -507,7 +506,6 @@ export default function HomePageClient({
             width: isMobile ? 'min(100%, 380px)' : '100%',
             maxWidth: isMobile ? 380 : heroPanelMaxWidth,
             order: heroContentOrder,
-            gridColumn: heroUsesSplitLayout ? heroContentOrder : undefined,
             justifySelf:
               heroUsesSplitLayout
                 ? hero.alignment === 'right'
@@ -796,7 +794,6 @@ export default function HomePageClient({
           <div
             style={{
               order: heroFloatingOrder,
-              gridColumn: heroFloatingOrder,
               minHeight: '100%',
               display: 'flex',
               alignItems:
