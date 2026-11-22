@@ -151,6 +151,7 @@ export default function AdminSettingsPage() {
     from: '',
   });
   const [savingWhatsAppConfig, setSavingWhatsAppConfig] = useState(false);
+  const [hasSavedWhatsAppToken, setHasSavedWhatsAppToken] = useState(false);
 
   async function loadSettings() {
     const data = await adminSelectRows<Array<{ key: string; value: string }>>(
@@ -167,11 +168,21 @@ export default function AdminSettingsPage() {
     try {
       const response = await fetch('/api/admin/whatsapp');
       const result = (await response.json()) as {
+        accountSid?: string;
+        from?: string;
+        hasAuthToken?: boolean;
         configured?: boolean;
         provider?: 'twilio' | null;
         source?: 'env' | 'runtime' | null;
       };
 
+      if (!response.ok) throw new Error('Could not load WhatsApp settings.');
+      setWhatsAppConfigForm({
+        accountSid: result.accountSid || '',
+        authToken: '',
+        from: result.from || '',
+      });
+      setHasSavedWhatsAppToken(Boolean(result.hasAuthToken));
       setWhatsAppApi({
         configured: Boolean(result.configured),
         loading: false,
@@ -211,14 +222,14 @@ export default function AdminSettingsPage() {
 
   useUnsavedChangesWarning(Boolean(config?.admin.warnOnUnsavedChanges && hasUnsavedChanges));
 
-  async function saveWhatsAppConnection() {
+  async function saveWhatsAppConnection(action: 'configure' | 'save' = 'configure') {
     setSavingWhatsAppConfig(true);
     try {
       const response = await fetch('/api/admin/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'configure',
+          action,
           accountSid: whatsAppConfigForm.accountSid,
           authToken: whatsAppConfigForm.authToken,
           from: whatsAppConfigForm.from,
@@ -242,9 +253,10 @@ export default function AdminSettingsPage() {
         provider: result.provider || null,
         source: result.source || null,
       });
-      setWhatsAppConfigForm(current => ({ ...current, authToken: '' }));
+      await loadWhatsAppStatus();
       setMsg('✅ WhatsApp API connection saved.');
     } catch (error) {
+      if (action === 'save') throw error;
       const message = error instanceof Error ? error.message : 'WhatsApp connection failed.';
       setMsg(`❌ ${message}`);
     } finally {
@@ -278,7 +290,8 @@ export default function AdminSettingsPage() {
         authToken: '',
         from: '',
       });
-      setMsg('✅ WhatsApp runtime connection removed.');
+      setHasSavedWhatsAppToken(false);
+      setMsg('✅ WhatsApp API connection removed.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Disconnect failed.';
       setMsg(`❌ ${message}`);
@@ -495,6 +508,9 @@ export default function AdminSettingsPage() {
       ];
 
       await Promise.all(entries.map(([key, value]) => writeSiteSetting(supabase, key, value)));
+      if (Object.values(whatsAppConfigForm).some(value => value.trim())) {
+        await saveWhatsAppConnection('save');
+      }
       await loadSettings();
       setMsg('✅ Global settings saved successfully.');
     } catch (error) {
@@ -1722,7 +1738,7 @@ export default function AdminSettingsPage() {
                       }
                       style={inputStyle}
                       type="password"
-                      placeholder="Auth token"
+                      placeholder={hasSavedWhatsAppToken ? '••••••••' : 'Auth token'}
                     />
                   </AdminField>
                   <AdminField label="WhatsApp Sender Number">
@@ -1746,7 +1762,7 @@ export default function AdminSettingsPage() {
                     disabled={
                       savingWhatsAppConfig ||
                       !whatsAppConfigForm.accountSid.trim() ||
-                      !whatsAppConfigForm.authToken.trim() ||
+                      (!hasSavedWhatsAppToken && !whatsAppConfigForm.authToken.trim()) ||
                       !whatsAppConfigForm.from.trim()
                     }
                     variant="primary"
@@ -1755,7 +1771,7 @@ export default function AdminSettingsPage() {
                   </AdminActionButton>
                   <AdminActionButton
                     onClick={() => void disconnectWhatsAppConnection()}
-                    disabled={savingWhatsAppConfig || whatsAppApi.source !== 'runtime'}
+                    disabled={savingWhatsAppConfig || !hasSavedWhatsAppToken}
                     variant="secondary"
                   >
                     Disconnect
@@ -1769,7 +1785,7 @@ export default function AdminSettingsPage() {
                   {whatsAppApi.loading
                     ? 'Checking WhatsApp API status...'
                     : whatsAppApi.configured
-                      ? `Direct send is active via ${whatsAppApi.provider}. ${whatsAppApi.source === 'env' ? 'Environment variables are currently taking priority.' : 'Runtime credentials saved from settings are active.'}`
+                      ? `Direct send is active via ${whatsAppApi.provider}. ${whatsAppApi.source === 'env' ? 'Using environment credentials.' : 'Using credentials saved in settings.'}`
                       : 'No direct WhatsApp API connection is active yet. Inbox will keep showing the fallback Open WhatsApp action until you connect it here.'}
                 </div>
               </div>

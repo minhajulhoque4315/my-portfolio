@@ -17,7 +17,13 @@ export async function GET(request: NextRequest) {
     return unauthorized();
   }
 
-  return NextResponse.json(await getWhatsAppProviderStatus());
+  try {
+    return NextResponse.json(await getWhatsAppProviderStatus(), {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  } catch {
+    return NextResponse.json({ error: 'Could not load WhatsApp settings.' }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -27,7 +33,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as {
-      action?: 'send' | 'configure';
+      action?: 'send' | 'configure' | 'save';
       accountSid?: string;
       authToken?: string;
       body?: string;
@@ -35,19 +41,19 @@ export async function POST(request: NextRequest) {
       to?: string;
     };
 
-    if (body.action === 'configure') {
+    if (body.action === 'configure' || body.action === 'save') {
       const accountSid = body.accountSid?.trim() || '';
       const authToken = body.authToken?.trim() || '';
       const from = body.from?.trim() || '';
 
-      if (!accountSid || !authToken || !from) {
+      if (!accountSid || !from) {
         return NextResponse.json(
           { error: 'Account SID, Auth Token, and WhatsApp sender number are required.' },
           { status: 400 }
         );
       }
 
-      await saveRuntimeTwilioConfig({ accountSid, authToken, from });
+      await saveRuntimeTwilioConfig({ accountSid, authToken, from }, body.action === 'configure');
       return NextResponse.json({
         ok: true,
         ...(await getWhatsAppProviderStatus()),
