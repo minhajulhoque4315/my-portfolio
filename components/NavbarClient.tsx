@@ -665,32 +665,15 @@ export default function NavbarClient({
   }
 
   const mobilePanelStyle: React.CSSProperties =
-    design.mobile.style === 'dropdown'
-      ? {
-          // A dropdown inside the sticky navbar is otherwise anchored to the
-          // document and drifts below the viewport after scrolling.
-          position: 'fixed',
-          top: 70,
-          right: 16,
-          left: 16,
-          width: 'auto',
-          maxHeight: 'calc(100dvh - 86px)',
-          overflowY: 'auto',
-          borderRadius: 24,
-          padding: heightPreset.panelPadding,
-        }
-      : {
-          position: 'fixed',
-          // Keep the navigation bar available while the menu is open and place
-          // the first link directly below it on small screens.
-          top: 70,
-          bottom: 0,
-          [design.mobile.position]: 0,
-          width: design.mobile.style === 'fullscreen' ? '100vw' : 'min(420px, 88vw)',
-          borderRadius: design.mobile.style === 'fullscreen' ? 0 : 28,
-          padding: '20px 18px calc(26px + env(safe-area-inset-bottom))',
-          overflowY: 'auto',
-        };
+    {
+      position: 'fixed',
+      top: 70,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      overflowY: 'auto',
+      padding: 'clamp(32px, 9vh, 76px) 24px calc(30px + env(safe-area-inset-bottom))',
+    };
 
   return (
     <>
@@ -805,8 +788,51 @@ export default function NavbarClient({
           justify-content: center;
         }
         .site-navbar-mobile-panel .site-navbar-mobile-link {
-          width: 100%;
+          width: min(72vw, 330px);
           box-shadow: none;
+          background: transparent !important;
+          border-color: transparent !important;
+          color: ${dark ? 'rgba(248,250,252,0.76)' : 'rgba(15,23,42,0.68)'} !important;
+          font-size: clamp(1.15rem, 5vw, 1.5rem);
+          letter-spacing: -0.03em;
+          padding: 12px 16px !important;
+        }
+        .site-navbar-mobile-panel .site-navbar-mobile-link[data-active="true"] {
+          color: ${dark ? '#ffffff' : '#0f172a'} !important;
+          background: ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.74)'} !important;
+          border: 1px solid ${navAccent} !important;
+          border-radius: 999px !important;
+          box-shadow: 0 12px 30px ${dark ? 'rgba(0,0,0,0.28)' : 'rgba(15,23,42,0.12)'} !important;
+        }
+        .site-navbar-mobile-arc-list {
+          position: relative;
+          display: grid;
+          gap: clamp(10px, 2.5vh, 22px);
+          width: min(100%, 440px);
+          margin: 0 auto;
+          padding: 18px 0;
+        }
+        .site-navbar-mobile-arc-list::after {
+          position: absolute;
+          z-index: -1;
+          top: -170px;
+          right: -500px;
+          width: 760px;
+          height: 860px;
+          border: 1px solid ${dark ? 'rgba(255,255,255,0.16)' : 'rgba(15,23,42,0.14)'};
+          border-radius: 50%;
+          content: "";
+          pointer-events: none;
+        }
+        .site-navbar-mobile-arc-list > :nth-child(1) { transform: translateX(0); }
+        .site-navbar-mobile-arc-list > :nth-child(2) { transform: translateX(14px); }
+        .site-navbar-mobile-arc-list > :nth-child(3) { transform: translateX(34px); }
+        .site-navbar-mobile-arc-list > :nth-child(4) { transform: translateX(58px); }
+        .site-navbar-mobile-arc-list > :nth-child(5) { transform: translateX(80px); }
+        .site-navbar-mobile-panel .site-navbar-action {
+          width: min(72vw, 330px);
+          margin: 12px auto 0;
+          border-radius: 999px;
         }
         .site-mobile-bottom-nav {
           animation: mobilePanelIn 240ms cubic-bezier(.2,.8,.2,1);
@@ -909,7 +935,7 @@ export default function NavbarClient({
               right: 0,
               bottom: 0,
               left: 0,
-              background: dark ? 'rgba(2,6,23,0.72)' : 'rgba(15,23,42,0.18)',
+              background: dark ? 'rgba(2,6,23,0.92)' : 'rgba(241,245,249,0.94)',
               zIndex: 999,
             }}
           />
@@ -917,15 +943,13 @@ export default function NavbarClient({
             className="site-navbar-mobile-panel"
             style={{
               ...mobilePanelStyle,
-              background: dark ? '#020617' : '#ffffff',
-              border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
-              boxShadow: dark
-                ? '0 30px 80px rgba(0,0,0,0.5)'
-                : '0 30px 80px rgba(15,23,42,0.22)',
+              background: 'transparent',
+              border: 'none',
+              boxShadow: 'none',
               zIndex: 1001,
             }}
           >
-            <div style={{ display: 'grid', gap: 2 }}>
+            <div className="site-navbar-mobile-arc-list">
               {items.map(renderMobileItem)}
             </div>
 
