@@ -667,12 +667,12 @@ export default function NavbarClient({
   const mobilePanelStyle: React.CSSProperties =
     {
       position: 'fixed',
-      top: 70,
+      inset: 0,
       right: 0,
       bottom: 0,
       left: 0,
-      overflowY: 'auto',
-      padding: 'clamp(32px, 9vh, 76px) 24px calc(30px + env(safe-area-inset-bottom))',
+      overflow: 'hidden',
+      padding: 'max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom))',
     };
 
   return (
@@ -788,14 +788,15 @@ export default function NavbarClient({
           justify-content: center;
         }
         .site-navbar-mobile-panel .site-navbar-mobile-link {
-          width: min(72vw, 330px);
+          width: auto;
           box-shadow: none;
           background: transparent !important;
           border-color: transparent !important;
-          color: ${dark ? 'rgba(248,250,252,0.76)' : 'rgba(15,23,42,0.68)'} !important;
-          font-size: clamp(1.15rem, 5vw, 1.5rem);
+          color: ${dark ? 'rgba(248,250,252,0.48)' : 'rgba(15,23,42,0.42)'} !important;
+          font-size: clamp(1.3rem, 6vw, 1.75rem);
           letter-spacing: -0.03em;
           padding: 12px 16px !important;
+          justify-content: flex-end !important;
         }
         .site-navbar-mobile-panel .site-navbar-mobile-link[data-active="true"] {
           color: ${dark ? '#ffffff' : '#0f172a'} !important;
@@ -806,33 +807,56 @@ export default function NavbarClient({
         }
         .site-navbar-mobile-arc-list {
           position: relative;
-          display: grid;
-          gap: clamp(10px, 2.5vh, 22px);
-          width: min(100%, 440px);
-          margin: 0 auto;
-          padding: 18px 0;
+          width: 100%;
+          height: min(72dvh, 720px);
+          margin: max(70px, 11dvh) auto 0;
         }
         .site-navbar-mobile-arc-list::after {
           position: absolute;
           z-index: -1;
-          top: -170px;
-          right: -500px;
-          width: 760px;
-          height: 860px;
-          border: 1px solid ${dark ? 'rgba(255,255,255,0.16)' : 'rgba(15,23,42,0.14)'};
+          top: -24%;
+          right: -128%;
+          width: 160%;
+          height: 145%;
+          border: 1px solid ${dark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.16)'};
           border-radius: 50%;
           content: "";
           pointer-events: none;
         }
-        .site-navbar-mobile-arc-list > :nth-child(1) { transform: translateX(0); }
-        .site-navbar-mobile-arc-list > :nth-child(2) { transform: translateX(14px); }
-        .site-navbar-mobile-arc-list > :nth-child(3) { transform: translateX(34px); }
-        .site-navbar-mobile-arc-list > :nth-child(4) { transform: translateX(58px); }
-        .site-navbar-mobile-arc-list > :nth-child(5) { transform: translateX(80px); }
+        .site-navbar-mobile-arc-list > * {
+          position: absolute;
+          right: 22%;
+          width: min(68vw, 320px);
+        }
+        .site-navbar-mobile-arc-list > :nth-child(1) { top: 4%; transform: translateX(-42px); }
+        .site-navbar-mobile-arc-list > :nth-child(2) { top: 20%; transform: translateX(-12px); }
+        .site-navbar-mobile-arc-list > :nth-child(3) { top: 36%; transform: translateX(14px); }
+        .site-navbar-mobile-arc-list > :nth-child(4) { top: 52%; transform: translateX(38px); }
+        .site-navbar-mobile-arc-list > :nth-child(5) { top: 68%; transform: translateX(60px); }
+        .site-navbar-mobile-menu-close {
+          position: absolute;
+          top: max(22px, env(safe-area-inset-top));
+          right: 22px;
+          display: grid;
+          width: 46px;
+          height: 46px;
+          place-items: center;
+          border: 1px solid ${dark ? 'rgba(255,255,255,0.16)' : 'rgba(15,23,42,0.12)'};
+          border-radius: 50%;
+          background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.04)'};
+          color: ${dark ? '#f8fafc' : '#0f172a'};
+          font-size: 26px;
+        }
         .site-navbar-mobile-panel .site-navbar-action {
           width: min(72vw, 330px);
           margin: 12px auto 0;
           border-radius: 999px;
+        }
+        .site-navbar-mobile-menu-actions {
+          position: absolute;
+          right: 24px;
+          bottom: max(24px, env(safe-area-inset-bottom));
+          left: 24px;
         }
         .site-mobile-bottom-nav {
           animation: mobilePanelIn 240ms cubic-bezier(.2,.8,.2,1);
@@ -931,11 +955,11 @@ export default function NavbarClient({
             onClick={() => setMenuOpen(false)}
             style={{
               position: 'fixed',
-              top: 70,
+              inset: 0,
               right: 0,
               bottom: 0,
               left: 0,
-              background: dark ? 'rgba(2,6,23,0.92)' : 'rgba(241,245,249,0.94)',
+              background: dark ? '#020617' : '#f8fafc',
               zIndex: 999,
             }}
           />
@@ -949,11 +973,19 @@ export default function NavbarClient({
               zIndex: 1001,
             }}
           >
+            <button
+              className="site-navbar-mobile-menu-close"
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              ×
+            </button>
             <div className="site-navbar-mobile-arc-list">
               {items.map(renderMobileItem)}
             </div>
 
-            <div style={{ display: 'grid', gap: 10, marginTop: 18 }}>
+            <div className="site-navbar-mobile-menu-actions" style={{ display: 'grid', gap: 10 }}>
               {design.mobile.showLoginButton ? renderLoginAction('mobile-login-action') : null}
               {design.mobile.showThemeToggle && themeToggle.visible
                 ? renderThemeButton('mobile-theme-toggle')
