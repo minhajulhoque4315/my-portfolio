@@ -49,6 +49,8 @@ type PortfolioShowcaseProps = {
   pageSettings: PortfolioPageSettings;
   loading?: boolean;
   variant: 'page' | 'homepage';
+  activeTab?: PortfolioTabKey;
+  onTabChange?: (tab: PortfolioTabKey) => void;
   badge?: string;
   title?: string;
   subtitle?: string;
@@ -393,6 +395,8 @@ export default function PortfolioShowcase({
   pageSettings,
   loading = false,
   variant,
+  activeTab: controlledTab,
+  onTabChange,
   badge,
   title,
   subtitle,
@@ -494,7 +498,8 @@ export default function PortfolioShowcase({
 
   const tabs = variant === 'page' ? getPortfolioTabs(items, pageSettings) : homepageTabs;
   const defaultTab = tabs[0]?.key || 'all';
-  const activeTab = tabs.some(tab => tab.key === activeTabState) ? activeTabState : defaultTab;
+  const requestedTab = controlledTab ?? activeTabState;
+  const activeTab = tabs.some(tab => tab.key === requestedTab) ? requestedTab : defaultTab;
 
   const tabItems = (() => {
     if (variant === 'page') {
@@ -1388,7 +1393,12 @@ export default function PortfolioShowcase({
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setActiveTabState(tab.key)}
+                    aria-pressed={activeTab === tab.key}
+                    onClick={() => {
+                      setActiveTabState(tab.key);
+                      setActiveCategoryByTab(current => ({ ...current, [tab.key]: 'all' }));
+                      onTabChange?.(tab.key);
+                    }}
                     style={{
                       background:
                         activeTab === tab.key

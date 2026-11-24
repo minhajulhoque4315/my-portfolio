@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { useTheme } from '@/components/ThemeProvider';
 import GlobalFooter from '@/components/shared/GlobalFooter';
@@ -25,6 +26,7 @@ import {
   type PortfolioItemMetaConfigMap,
   type PortfolioPageSettings,
   type PortfolioPreviewItem,
+  type PortfolioTabKey,
 } from '@/lib/portfolio-content';
 
 const supabase = createClient(
@@ -33,6 +35,32 @@ const supabase = createClient(
 );
 
 export default function PortfolioPage() {
+  return (
+    <Suspense fallback={<p role="status" style={{ padding: '120px 24px' }}>Loading portfolio...</p>}>
+      <PortfolioPageContent />
+    </Suspense>
+  );
+}
+
+function PortfolioPageContent() {
+  const searchParams = useSearchParams();
+  const requestedType = searchParams.get('type');
+  const activeTab: PortfolioTabKey = requestedType === 'graphics'
+    ? 'graphic'
+    : requestedType === 'videos' ? 'video' : 'all';
+
+  function changeTab(tab: PortfolioTabKey) {
+    const url = new URL(window.location.href);
+    if (tab === 'all') {
+      url.searchParams.delete('type');
+    } else {
+      url.searchParams.set('type', tab === 'graphic' ? 'graphics' : 'videos');
+    }
+    if (url.href !== window.location.href) {
+      window.history.pushState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+  }
+
   const { theme } = useTheme();
   const dark = theme === 'dark';
   const [items, setItems] = useState<PortfolioPreviewItem[]>([]);
@@ -135,6 +163,8 @@ export default function PortfolioPage() {
     >
       <PortfolioShowcase
         variant="page"
+        activeTab={activeTab}
+        onTabChange={changeTab}
         items={items}
         categories={categories}
         pageSettings={pageSettings}
