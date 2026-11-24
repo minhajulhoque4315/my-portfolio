@@ -667,12 +667,14 @@ export default function NavbarClient({
   const mobilePanelStyle: React.CSSProperties =
     design.mobile.style === 'dropdown'
       ? {
-          position: 'absolute',
-          top: 'calc(100% + 12px)',
-          right: design.mobile.position === 'right' ? 0 : undefined,
-          left: design.mobile.position === 'left' ? 0 : undefined,
-          width: 'min(420px, calc(100vw - 32px))',
-          maxHeight: '70vh',
+          // A dropdown inside the sticky navbar is otherwise anchored to the
+          // document and drifts below the viewport after scrolling.
+          position: 'fixed',
+          top: 70,
+          right: 16,
+          left: 16,
+          width: 'auto',
+          maxHeight: 'calc(100dvh - 86px)',
           overflowY: 'auto',
           borderRadius: 24,
           padding: heightPreset.panelPadding,
