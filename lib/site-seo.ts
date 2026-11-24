@@ -55,6 +55,15 @@ export const SEO_PAGE_OPTIONS: Array<{ id: SeoPageId; label: string; path: strin
   { id: 'tutorial', label: 'Tutorial', path: '/tutorial' },
 ];
 
+const LEGACY_PROFESSIONAL_TITLE = 'Graphic Designer & Video Editor';
+const CANONICAL_PROFESSIONAL_TITLE = 'Video Editor & Motion Designer';
+
+// Settings are editable in the admin UI. Normalize only title fields so old
+// saved SEO values cannot reintroduce the retired professional title.
+export function normalizeSeoTitle(value: string) {
+  return value.replaceAll(LEGACY_PROFESSIONAL_TITLE, CANONICAL_PROFESSIONAL_TITLE);
+}
+
 const PAGE_DEFAULT_COPY: Record<SeoPageId, { description: string; suffix: string }> = {
   home: {
     description: SITE_CONFIG.description,
@@ -189,11 +198,12 @@ export function getEffectiveSeoPage(
   const option = optionForPage(pageId);
   const page = seo.pages[pageId] || fallback;
   const canonicalPath = normalizeCanonicalPath(page.canonicalPath, option.path);
-  const seoTitle =
+  const seoTitle = normalizeSeoTitle(
     page.seoTitle.trim() ||
     (pageId === 'home'
       ? seo.siteTitle.trim()
-      : `${PAGE_DEFAULT_COPY[pageId].suffix} | ${siteName}`);
+      : `${PAGE_DEFAULT_COPY[pageId].suffix} | ${siteName}`)
+  );
   const seoDescription =
     page.seoDescription.trim() ||
     (pageId === 'home'
@@ -206,7 +216,7 @@ export function getEffectiveSeoPage(
     ogDescription: page.ogDescription.trim() || seoDescription,
     ogImage: page.ogImage.trim() || seo.defaultOgImage.trim(),
     ogImageAlt: page.ogImageAlt.trim() || seo.defaultOgImageAlt.trim(),
-    ogTitle: page.ogTitle.trim() || seoTitle,
+    ogTitle: normalizeSeoTitle(page.ogTitle.trim() || seoTitle),
     seoDescription,
     seoTitle,
     twitterCard: page.twitterCard || seo.twitterCard,

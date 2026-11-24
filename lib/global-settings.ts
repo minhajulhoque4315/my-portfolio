@@ -4,6 +4,7 @@ import { SITE_CONFIG } from '@/lib/site-config';
 import {
   createDefaultSeoPageSettings,
   createDefaultSiteSeoSettings,
+  normalizeSeoTitle,
   normalizeCanonicalPath,
   normalizeCanonicalUrl,
   type SeoPageId,
@@ -246,9 +247,9 @@ function sanitizeSeoPage(
     ogDescription: text(value.ogDescription, fallback.ogDescription),
     ogImage: text(value.ogImage, fallback.ogImage),
     ogImageAlt: text(value.ogImageAlt, fallback.ogImageAlt),
-    ogTitle: text(value.ogTitle, fallback.ogTitle),
+    ogTitle: normalizeSeoTitle(text(value.ogTitle, fallback.ogTitle)),
     seoDescription: text(value.seoDescription, fallback.seoDescription),
-    seoTitle: text(value.seoTitle, fallback.seoTitle || createDefaultSeoPageSettings(pageId, siteName).seoTitle),
+    seoTitle: normalizeSeoTitle(text(value.seoTitle, fallback.seoTitle || createDefaultSeoPageSettings(pageId, siteName).seoTitle)),
     twitterCard: twitterCard(value.twitterCard, fallback.twitterCard),
   };
 }
@@ -291,7 +292,7 @@ function sanitizeSeoSettings(
     robotsNoarchive: bool(value.robotsNoarchive, fallback.robotsNoarchive),
     sitemapEnabled: bool(value.sitemapEnabled, fallback.sitemapEnabled),
     sitemapIncludeImages: bool(value.sitemapIncludeImages, fallback.sitemapIncludeImages),
-    siteTitle: text(value.siteTitle, legacySiteTitle),
+    siteTitle: normalizeSeoTitle(text(value.siteTitle, legacySiteTitle)),
     structuredDataEnabled: bool(value.structuredDataEnabled, fallback.structuredDataEnabled),
     structuredDataType: structuredDataType(value.structuredDataType, fallback.structuredDataType),
     twitterCard: twitterCard(value.twitterCard, fallback.twitterCard),
