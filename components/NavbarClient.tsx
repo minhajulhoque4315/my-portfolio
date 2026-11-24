@@ -679,12 +679,14 @@ export default function NavbarClient({
         }
       : {
           position: 'fixed',
-          top: 0,
+          // Keep the navigation bar available while the menu is open and place
+          // the first link directly below it on small screens.
+          top: 70,
           bottom: 0,
           [design.mobile.position]: 0,
           width: design.mobile.style === 'fullscreen' ? '100vw' : 'min(420px, 88vw)',
           borderRadius: design.mobile.style === 'fullscreen' ? 0 : 28,
-          padding: '88px 18px calc(26px + env(safe-area-inset-bottom))',
+          padding: '20px 18px calc(26px + env(safe-area-inset-bottom))',
           overflowY: 'auto',
         };
 
@@ -901,8 +903,11 @@ export default function NavbarClient({
             onClick={() => setMenuOpen(false)}
             style={{
               position: 'fixed',
-              inset: 0,
-              background: dark ? '#020617' : '#ffffff',
+              top: 70,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              background: dark ? 'rgba(2,6,23,0.72)' : 'rgba(15,23,42,0.18)',
               zIndex: 999,
             }}
           />
