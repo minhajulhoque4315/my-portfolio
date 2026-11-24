@@ -1,14 +1,20 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import GlobalFooter from '@/components/shared/GlobalFooter';
 import { getGlobalFooterConfig } from '@/lib/footer-content';
 import { getServerSettingMap } from '@/lib/server-site-settings';
+
+export const metadata: Metadata = {
+  title: { absolute: 'Page Not Found | Md. Minhajul Hoque' },
+  description: 'The requested page could not be found on the portfolio of Md. Minhajul Hoque.',
+  alternates: { canonical: './' },
+};
 
 export default async function NotFound() {
   const footer = getGlobalFooterConfig(await getServerSettingMap());
 
   return (
     <>
-      <title>Page Not Found | Md Minhajul Hoque</title>
       <main className="mx-auto flex min-h-[60vh] max-w-4xl flex-col items-start justify-center gap-5 px-6 py-24">
         <p className="text-sm font-semibold">404</p>
         <h1 className="text-4xl font-bold">Page not found</h1>

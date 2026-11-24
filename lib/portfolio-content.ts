@@ -364,20 +364,20 @@ export const DEFAULT_HOMEPAGE_PORTFOLIO_SETTINGS: HomepagePortfolioSectionSettin
 };
 
 export const DEFAULT_PORTFOLIO_PAGE_SETTINGS: PortfolioPageSettings = {
-  title: 'আমার কাজের সংগ্রহ',
-  subtitle: 'ভিডিও এডিটিং ও গ্রাফিক্স ডিজাইনের নির্বাচিত কাজগুলো এক জায়গায় দেখুন।',
+  title: 'Portfolio',
+  subtitle: 'Selected work across video editing, motion graphics, and graphic design.',
   tabs: {
     all: {
       enabled: true,
-      label: 'সব',
+      label: 'All',
     },
     video: {
       enabled: true,
-      label: 'ভিডিও এডিটিং',
+      label: 'Video Editing',
     },
     graphic: {
       enabled: true,
-      label: 'গ্রাফিক্স ডিজাইন',
+      label: 'Graphic Design',
     },
   },
   allTab: {

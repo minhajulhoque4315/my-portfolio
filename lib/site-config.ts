@@ -36,12 +36,12 @@ export function getCanonicalUrl(path = '/') {
 export const SITE_CONFIG = {
   siteName: 'Md Minhajul Hoque',
   ownerName: 'Md. Minhajul Hoque',
-  profession: 'Graphics & Video Editor',
+  profession: 'Video Editor & Motion Designer',
   url: getSiteUrl(),
-  title: 'Md Minhajul Hoque | Graphics & Video Editor',
+  title: 'Md. Minhajul Hoque | Video Editor & Motion Designer',
   description:
-    'Official portfolio of Md Minhajul Hoque, Graphics & Video Editor specializing in graphic design, video editing, motion graphics, and digital marketing.',
-  shortDescription: 'Official portfolio of Md Minhajul Hoque, Graphics & Video Editor.',
+    'Official portfolio of Md. Minhajul Hoque, Video Editor & Motion Designer specializing in documentary editing, short-form content, motion graphics, and brand design.',
+  shortDescription: 'Official portfolio of Md. Minhajul Hoque, Video Editor & Motion Designer.',
   keywords: [
     'Graphic Design',
     'Video Editing',
@@ -53,15 +53,19 @@ export const SITE_CONFIG = {
     'Bangladesh',
   ],
   ogImage: '/og-image.jpg',
-  linkedIn: 'https://www.linkedin.com/in/muhammad-minhajul-hoque-a34b73342/',
+  linkedIn: 'https://www.linkedin.com/in/md-minhajul-hoque-367852420',
   alternateSiteNames: [
     'Md. Minhajul Hoque',
     'Minhajul Hoque',
     'Md Minhaj',
     'Muhammad Minhajul Hoque',
   ],
-  alternatePersonNames: ['Md Minhajul Hoque', 'Minhajul Hoque', 'Md Minhaj'],
-  knowsAbout: ['Graphic Design', 'Video Editing', 'Motion Graphics', 'Digital Marketing'],
+  alternatePersonNames: ['Md Minhajul Hoque', 'Minhajul Hoque', 'Muhammad Minhajul Hoque'],
+  knowsAbout: [
+    'Talking-Head Video Editing', 'Documentary Video Editing', 'Social Media Video Editing',
+    'Short-Form Video Editing', 'Motion Graphics', 'Promotional Video Production',
+    'Brand Identity Design', 'Social Media Graphic Design', 'Thumbnail Design',
+  ],
 } as const;
 
 export function absoluteSiteUrl(path = '/') {

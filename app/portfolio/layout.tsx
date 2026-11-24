@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { getServerGlobalSettings } from '@/lib/server-site-settings';
-import { buildPageMetadata } from '@/lib/site-metadata';
+import { buildPageMetadata, buildPortfolioCollectionStructuredData } from '@/lib/site-metadata';
+import { CrawlablePortfolioContent } from '@/components/seo/CrawlablePageContent';
 
 export async function generateMetadata(): Promise<Metadata> {
   await connection();
@@ -9,10 +10,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata(settings, 'portfolio');
 }
 
-export default function PortfolioLayout({
+export default async function PortfolioLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const settings = await getServerGlobalSettings();
+  const structuredData = buildPortfolioCollectionStructuredData(settings);
+  return <>{children}<CrawlablePortfolioContent /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} /></>;
 }

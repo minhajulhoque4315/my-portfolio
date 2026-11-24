@@ -69,7 +69,7 @@ const PAGE_DEFAULT_COPY: Record<SeoPageId, { description: string; suffix: string
     suffix: 'Graphics',
   },
   about: {
-    description: 'Learn about Md. Minhajul Hoque, a Graphics & Video Editor specializing in visual design, motion graphics, and digital marketing.',
+    description: 'Learn about Md. Minhajul Hoque, a Video Editor & Motion Designer specializing in visual design, motion graphics, and digital storytelling.',
     suffix: 'About',
   },
   contact: {

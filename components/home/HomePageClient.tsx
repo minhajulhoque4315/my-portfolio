@@ -417,7 +417,7 @@ export default function HomePageClient({
         {currentHeroImage ? (
           <Image
             src={currentHeroImage}
-            alt=""
+            alt="Md. Minhajul Hoque — Video Editor & Motion Designer, Dhaka, Bangladesh"
             fill
             priority
             fetchPriority="high"

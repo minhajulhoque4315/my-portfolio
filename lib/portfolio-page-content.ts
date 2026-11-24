@@ -209,10 +209,10 @@ export function getPortfolioPageItemKey(sourceType: string, itemId: string | num
 }
 
 export function createDefaultPortfolioPageBuilderConfig(map?: SettingMap): PortfolioPageBuilderConfig {
-  const title = parseStyledSetting(map?.portfolio_page_title, 'আমার কাজের সংগ্রহ').value;
+  const title = parseStyledSetting(map?.portfolio_page_title, 'Portfolio').value;
   const subtitle = parseStyledSetting(
     map?.portfolio_page_subtitle,
-    'ভিডিও এডিটিং ও গ্রাফিক্স ডিজাইনের নির্বাচিত কাজগুলো এক জায়গায় দেখুন।'
+    'Selected work across video editing, motion graphics, and graphic design.'
   ).value;
 
   return {
@@ -224,7 +224,7 @@ export function createDefaultPortfolioPageBuilderConfig(map?: SettingMap): Portf
       title,
       subtitle,
       introText:
-        'ভিডিও এডিটিং, গ্রাফিক্স ডিজাইন এবং cinematic visual direction-এর নির্বাচিত কাজগুলো type, category এবং preview support সহ সাজানো আছে।',
+        'Explore selected video editing, graphic design, and cinematic visual direction work by type and category.',
       showIntro: true,
       showBannerImage: false,
       bannerImage: '',
@@ -278,9 +278,9 @@ export function createDefaultPortfolioPageBuilderConfig(map?: SettingMap): Portf
       enabled: true,
       order: 30,
       label: 'Need a premium edit system?',
-      title: 'আপনার next project-এর জন্য ready to collaborate.',
+      title: 'Ready to collaborate on your next project?',
       description:
-        'ভিডিও, গ্রাফিক্স, বা complete content system লাগলে portfolio দেখে brief পাঠান। আমি concept থেকে polished delivery পর্যন্ত clean creative direction রাখি।',
+        'For video, graphics, or a complete content system, explore the portfolio and send a brief. From concept to polished delivery, every project gets clear creative direction.',
       showPrimaryButton: true,
       primaryButtonText: 'Start a Project',
       primaryButtonLink: '/contact',

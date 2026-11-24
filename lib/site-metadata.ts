@@ -249,33 +249,47 @@ export function buildPortfolioItemMetadata(
 }
 
 export function buildStructuredData(settings: GlobalSettingsConfig) {
-  const sameAs = Array.from(new Set([
-    SITE_CONFIG.linkedIn,
-    settings.social.facebook,
-    settings.social.instagram,
-    settings.social.youtube,
-    settings.social.linkedIn,
-    settings.social.behance,
-  ].filter(Boolean)));
+  const personId = `${SITE_CONFIG.url}/#person`;
 
   const website = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: SITE_CONFIG.siteName,
-    alternateName: SITE_CONFIG.alternateSiteNames,
+    name: 'Md. Minhajul Hoque',
+    alternateName: ['Md Minhajul Hoque', 'Minhajul Hoque', 'Muhammad Minhajul Hoque'],
     url: SITE_CONFIG.url,
   };
   const person = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: SITE_CONFIG.ownerName,
+    '@id': personId,
+    name: 'Md. Minhajul Hoque',
     alternateName: SITE_CONFIG.alternatePersonNames,
-    jobTitle: SITE_CONFIG.profession,
+    jobTitle: 'Video Editor & Motion Designer',
+    description: 'Video editor and motion designer based in Dhaka, Bangladesh, specialising in documentary editing, talking-head videos, short-form content, motion graphics and brand design for remote clients worldwide.',
     url: SITE_CONFIG.url,
-    sameAs,
+    image: absoluteAssetUrl(settings.siteIdentity.faviconUrl || SITE_CONFIG.ogImage),
+    email: 'mailto:minhajulhoque6914@gmail.com',
+    telephone: '+8801603144248',
+    address: { '@type': 'PostalAddress', addressLocality: 'Dhaka', addressCountry: 'BD' },
+    nationality: { '@type': 'Country', name: 'Bangladesh' },
     knowsAbout: SITE_CONFIG.knowsAbout,
+    sameAs: [
+      'https://www.linkedin.com/in/md-minhajul-hoque-367852420',
+      'https://www.facebook.com/MuhammadMinhajulHoque',
+      'https://www.instagram.com/muhammadminhajulhoque',
+      'https://www.youtube.com/@MdMinhajulHoque-s7t',
+      'https://www.behance.net/mdminhajulhoque',
+    ],
+    hasOccupation: [
+      { '@type': 'OrganizationRole', roleName: 'Video Editor & Motion Designer', startDate: '2025-08', endDate: '2026-10', memberOf: { '@type': 'Organization', name: 'HCSB' } },
+      { '@type': 'OrganizationRole', roleName: 'Video Editor & Motion Designer', startDate: '2025-07', endDate: '2025-08', memberOf: { '@type': 'Organization', name: 'Mohasagor.com' } },
+    ],
   };
-  const portfolio = {
+  return [website, person];
+}
+
+export function buildPortfolioCollectionStructuredData(settings: GlobalSettingsConfig) {
+  return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `${SITE_CONFIG.siteName} Portfolio`,
@@ -283,20 +297,77 @@ export function buildStructuredData(settings: GlobalSettingsConfig) {
     description: settings.seo.metaDescription || SITE_CONFIG.description,
     about: SITE_CONFIG.knowsAbout,
   };
+}
 
-  return [website, person, portfolio];
+export function buildAboutProfileStructuredData() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: { '@id': `${SITE_CONFIG.url}/#person` },
+  };
+}
+
+export function buildPortfolioDetailStructuredData(params: {
+  title: string;
+  description: string;
+  categoryName?: string;
+  path: string;
+  sourceType: PortfolioSourceType;
+  image?: string;
+  video?: {
+    thumbnailUrl: string;
+    uploadDate: string;
+    embedUrl: string;
+    contentUrl: string;
+  };
+}) {
+  const typeLabel = params.sourceType === 'video' ? 'Video Editing' : 'Graphic Design';
+  const categoryName = params.categoryName || typeLabel;
+  const itemUrl = absoluteSiteUrl(params.path);
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
+      { '@type': 'ListItem', position: 2, name: 'Portfolio', item: absoluteSiteUrl('/portfolio') },
+      { '@type': 'ListItem', position: 3, name: categoryName, item: absoluteSiteUrl('/portfolio') },
+      { '@type': 'ListItem', position: 4, name: params.title, item: itemUrl },
+    ],
+  };
+  const work = {
+    '@context': 'https://schema.org',
+    '@type': params.video ? 'VideoObject' : 'CreativeWork',
+    name: params.title,
+    description: params.description,
+    url: itemUrl,
+    image: params.video?.thumbnailUrl || (params.image ? absoluteAssetUrl(params.image) : undefined),
+    ...(params.video
+      ? {
+          thumbnailUrl: params.video.thumbnailUrl,
+          uploadDate: params.video.uploadDate,
+          embedUrl: params.video.embedUrl,
+          contentUrl: params.video.contentUrl,
+          creator: { '@id': `${SITE_CONFIG.url}/#person` },
+        }
+      : { creator: { '@id': `${SITE_CONFIG.url}/#person` } }),
+  };
+  return [breadcrumb, work];
 }
 
 export function buildRobots(settings: GlobalSettingsConfig): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-    },
-    sitemap:
-      settings.seo.sitemapEnabled
-        ? absoluteSiteUrl('/sitemap.xml')
-        : undefined,
+    rules: [
+      { userAgent: 'Googlebot', allow: '/' },
+      { userAgent: 'Bingbot', allow: '/' },
+      { userAgent: 'Applebot', allow: '/' },
+      { userAgent: 'OAI-SearchBot', allow: '/' },
+      { userAgent: 'PerplexityBot', allow: '/' },
+      { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'GPTBot', allow: '/' },
+      { userAgent: 'Google-Extended', allow: '/' },
+      { userAgent: '*', allow: '/' },
+    ],
+    sitemap: absoluteSiteUrl('/sitemap.xml'),
   };
 }
 

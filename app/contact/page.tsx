@@ -1086,23 +1086,25 @@ export default function ContactPage() {
                 }}
               >
                 <label style={{ display: 'grid', gap: 8 }}>
-                  <span style={fieldLabelStyle}>Your name</span>
+                  <span style={fieldLabelStyle}>Your name <span aria-hidden="true">*</span></span>
                   <input
                     value={form.name}
                     onChange={event => updateField('name', event.target.value)}
                     placeholder="Md. Rahim"
+                    required
                     aria-invalid={Boolean(fieldError('name'))}
                     style={inputStyle(Boolean(fieldError('name')))}
                   />
                   {fieldError('name') ? <span style={fieldErrorStyle}>{fieldError('name')}</span> : null}
                 </label>
                 <label style={{ display: 'grid', gap: 8 }}>
-                  <span style={fieldLabelStyle}>Email</span>
+                  <span style={fieldLabelStyle}>Email <span aria-hidden="true">*</span></span>
                   <input
                     type="email"
                     value={form.email}
                     onChange={event => updateField('email', event.target.value)}
                     placeholder="rahim@gmail.com"
+                    required
                     aria-invalid={Boolean(fieldError('email'))}
                     style={inputStyle(Boolean(fieldError('email')))}
                   />
@@ -1450,15 +1452,16 @@ export default function ContactPage() {
               <label style={{ display: 'grid', gap: 8 }}>
                 <span style={fieldLabelStyle}>
                   {workMode
-                    ? 'Project details / message'
+                    ? 'Project details / message *'
                     : collaborationMode
-                      ? 'Message / proposal details'
-                      : 'Message'}
+                      ? 'Message / proposal details *'
+                      : 'Message *'}
                 </span>
                 <textarea
                   value={form.message}
                   onChange={event => updateField('message', event.target.value)}
                   rows={6}
+                  required
                   placeholder={
                     workMode
                       ? 'Share goals, deliverables, references, platform, and anything important about the project...'
@@ -1497,6 +1500,7 @@ export default function ContactPage() {
               >
                 {submitting ? 'Sending...' : section.submitButtonText}
               </button>
+              <p style={{ margin: 0, color: muted, fontSize: 13 }}>Fields marked * are required.</p>
             </form>
           </>
         )}

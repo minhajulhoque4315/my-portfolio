@@ -4,7 +4,8 @@ import { connection } from 'next/server';
 import PortfolioDetailView from '@/components/portfolio/PortfolioDetailView';
 import { getPortfolioDetailData } from '@/lib/portfolio-detail';
 import { getServerGlobalSettings } from '@/lib/server-site-settings';
-import { buildPageMetadata, buildPortfolioItemMetadata } from '@/lib/site-metadata';
+import { buildPageMetadata, buildPortfolioDetailStructuredData, buildPortfolioItemMetadata } from '@/lib/site-metadata';
+import { getPortfolioItemDetailPath } from '@/lib/portfolio-content';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -35,5 +36,13 @@ export default async function GraphicPortfolioDetailPage({ params }: PageProps) 
     notFound();
   }
 
-  return <PortfolioDetailView {...data} />;
+  const structuredData = buildPortfolioDetailStructuredData({
+    title: data.item.title,
+    description: data.meta.seoDescription || data.meta.previewDescription || data.item.description || '',
+    categoryName: data.item.categoryName,
+    path: getPortfolioItemDetailPath(data.item, data.meta),
+    sourceType: 'graphic',
+    image: data.item.imageUrl,
+  });
+  return <><PortfolioDetailView {...data} />{structuredData.map((entry, index) => <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(entry).replace(/</g, '\\u003c') }} />)}</>;
 }
