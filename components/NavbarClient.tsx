@@ -1048,7 +1048,15 @@ export default function NavbarClient({
             <button
               className="site-navbar-action"
               type="button"
-              onClick={() => setMenuOpen(current => !current)}
+              onClick={() =>
+                setMenuOpen(current => {
+                  const willOpen = !current;
+                  if (willOpen) {
+                    window.scrollTo(0, 0);
+                  }
+                  return willOpen;
+                })
+              }
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               style={{
                 width: 42,
