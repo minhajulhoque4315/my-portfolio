@@ -667,24 +667,24 @@ export default function NavbarClient({
   const mobilePanelStyle: React.CSSProperties =
     design.mobile.style === 'dropdown'
       ? {
-          position: 'absolute',
-          top: 'calc(100% + 12px)',
-          right: design.mobile.position === 'right' ? 0 : undefined,
-          left: design.mobile.position === 'left' ? 0 : undefined,
-          width: 'min(420px, calc(100vw - 32px))',
-          maxHeight: '70vh',
+          position: 'fixed',
+          top: 70,
+          right: 16,
+          left: 16,
+          width: 'auto',
+          maxHeight: 'calc(100dvh - 86px)',
           overflowY: 'auto',
           borderRadius: 24,
           padding: heightPreset.panelPadding,
         }
       : {
           position: 'fixed',
-          top: 0,
+          top: 70,
           bottom: 0,
           [design.mobile.position]: 0,
           width: design.mobile.style === 'fullscreen' ? '100vw' : 'min(420px, 88vw)',
           borderRadius: design.mobile.style === 'fullscreen' ? 0 : 28,
-          padding: '88px 18px calc(26px + env(safe-area-inset-bottom))',
+          padding: '20px 18px calc(26px + env(safe-area-inset-bottom))',
           overflowY: 'auto',
         };
 
@@ -901,8 +901,11 @@ export default function NavbarClient({
             onClick={() => setMenuOpen(false)}
             style={{
               position: 'fixed',
-              inset: 0,
-              background: dark ? '#020617' : '#ffffff',
+              top: 70,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              background: dark ? 'rgba(2,6,23,0.72)' : 'rgba(15,23,42,0.18)',
               zIndex: 999,
             }}
           />
