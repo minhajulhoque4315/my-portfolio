@@ -665,15 +665,28 @@ export default function NavbarClient({
   }
 
   const mobilePanelStyle: React.CSSProperties =
-    {
-      position: 'fixed',
-      inset: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      overflow: 'hidden',
-      padding: 'max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom))',
-    };
+    design.mobile.style === 'dropdown'
+      ? {
+          position: 'absolute',
+          top: 'calc(100% + 12px)',
+          right: design.mobile.position === 'right' ? 0 : undefined,
+          left: design.mobile.position === 'left' ? 0 : undefined,
+          width: 'min(420px, calc(100vw - 32px))',
+          maxHeight: '70vh',
+          overflowY: 'auto',
+          borderRadius: 24,
+          padding: heightPreset.panelPadding,
+        }
+      : {
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          [design.mobile.position]: 0,
+          width: design.mobile.style === 'fullscreen' ? '100vw' : 'min(420px, 88vw)',
+          borderRadius: design.mobile.style === 'fullscreen' ? 0 : 28,
+          padding: '88px 18px calc(26px + env(safe-area-inset-bottom))',
+          overflowY: 'auto',
+        };
 
   return (
     <>
@@ -788,75 +801,8 @@ export default function NavbarClient({
           justify-content: center;
         }
         .site-navbar-mobile-panel .site-navbar-mobile-link {
-          width: auto;
-          box-shadow: none;
-          background: transparent !important;
-          border-color: transparent !important;
-          color: ${dark ? 'rgba(248,250,252,0.48)' : 'rgba(15,23,42,0.42)'} !important;
-          font-size: clamp(1.3rem, 6vw, 1.75rem);
-          letter-spacing: -0.03em;
-          padding: 12px 16px !important;
-          justify-content: flex-end !important;
-        }
-        .site-navbar-mobile-panel .site-navbar-mobile-link[data-active="true"] {
-          color: ${dark ? '#ffffff' : '#0f172a'} !important;
-          background: ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.74)'} !important;
-          border: 1px solid ${navAccent} !important;
-          border-radius: 999px !important;
-          box-shadow: 0 12px 30px ${dark ? 'rgba(0,0,0,0.28)' : 'rgba(15,23,42,0.12)'} !important;
-        }
-        .site-navbar-mobile-arc-list {
-          position: relative;
           width: 100%;
-          height: min(72dvh, 720px);
-          margin: max(70px, 11dvh) auto 0;
-        }
-        .site-navbar-mobile-arc-list::after {
-          position: absolute;
-          z-index: -1;
-          top: -24%;
-          right: -128%;
-          width: 160%;
-          height: 145%;
-          border: 1px solid ${dark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.16)'};
-          border-radius: 50%;
-          content: "";
-          pointer-events: none;
-        }
-        .site-navbar-mobile-arc-list > * {
-          position: absolute;
-          right: 22%;
-          width: min(68vw, 320px);
-        }
-        .site-navbar-mobile-arc-list > :nth-child(1) { top: 4%; transform: translateX(-42px); }
-        .site-navbar-mobile-arc-list > :nth-child(2) { top: 20%; transform: translateX(-12px); }
-        .site-navbar-mobile-arc-list > :nth-child(3) { top: 36%; transform: translateX(14px); }
-        .site-navbar-mobile-arc-list > :nth-child(4) { top: 52%; transform: translateX(38px); }
-        .site-navbar-mobile-arc-list > :nth-child(5) { top: 68%; transform: translateX(60px); }
-        .site-navbar-mobile-menu-close {
-          position: absolute;
-          top: max(22px, env(safe-area-inset-top));
-          right: 22px;
-          display: grid;
-          width: 46px;
-          height: 46px;
-          place-items: center;
-          border: 1px solid ${dark ? 'rgba(255,255,255,0.16)' : 'rgba(15,23,42,0.12)'};
-          border-radius: 50%;
-          background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.04)'};
-          color: ${dark ? '#f8fafc' : '#0f172a'};
-          font-size: 26px;
-        }
-        .site-navbar-mobile-panel .site-navbar-action {
-          width: min(72vw, 330px);
-          margin: 12px auto 0;
-          border-radius: 999px;
-        }
-        .site-navbar-mobile-menu-actions {
-          position: absolute;
-          right: 24px;
-          bottom: max(24px, env(safe-area-inset-bottom));
-          left: 24px;
+          box-shadow: none;
         }
         .site-mobile-bottom-nav {
           animation: mobilePanelIn 240ms cubic-bezier(.2,.8,.2,1);
@@ -956,10 +902,7 @@ export default function NavbarClient({
             style={{
               position: 'fixed',
               inset: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              background: dark ? '#020617' : '#f8fafc',
+              background: dark ? '#020617' : '#ffffff',
               zIndex: 999,
             }}
           />
@@ -967,25 +910,19 @@ export default function NavbarClient({
             className="site-navbar-mobile-panel"
             style={{
               ...mobilePanelStyle,
-              background: 'transparent',
-              border: 'none',
-              boxShadow: 'none',
+              background: dark ? '#020617' : '#ffffff',
+              border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
+              boxShadow: dark
+                ? '0 30px 80px rgba(0,0,0,0.5)'
+                : '0 30px 80px rgba(15,23,42,0.22)',
               zIndex: 1001,
             }}
           >
-            <button
-              className="site-navbar-mobile-menu-close"
-              type="button"
-              onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
-            >
-              ×
-            </button>
-            <div className="site-navbar-mobile-arc-list">
+            <div style={{ display: 'grid', gap: 2 }}>
               {items.map(renderMobileItem)}
             </div>
 
-            <div className="site-navbar-mobile-menu-actions" style={{ display: 'grid', gap: 10 }}>
+            <div style={{ display: 'grid', gap: 10, marginTop: 18 }}>
               {design.mobile.showLoginButton ? renderLoginAction('mobile-login-action') : null}
               {design.mobile.showThemeToggle && themeToggle.visible
                 ? renderThemeButton('mobile-theme-toggle')
@@ -1108,15 +1045,7 @@ export default function NavbarClient({
             <button
               className="site-navbar-action"
               type="button"
-              onClick={() =>
-                setMenuOpen(current => {
-                  const willOpen = !current;
-                  if (willOpen) {
-                    window.scrollTo(0, 0);
-                  }
-                  return willOpen;
-                })
-              }
+              onClick={() => setMenuOpen(current => !current)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               style={{
                 width: 42,
