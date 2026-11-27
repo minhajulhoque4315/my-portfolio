@@ -421,7 +421,7 @@ export default function PortfolioShowcase({
     graphic: 'all',
   });
   const [selectedItem, setSelectedItem] = useState<PortfolioPreviewItem | null>(null);
-  const [selectedPreviewItems, setSelectedPreviewItems] = useState<PortfolioPreviewItem[]>([]);
+  const [categoryPreviewSelection, setCategoryPreviewSelection] = useState<Record<string, string>>({});
   const [focusItemKey, setFocusItemKey] = useState('');
   const [hoverPreviewKey, setHoverPreviewKey] = useState('');
   const [smartShowcaseMode, setSmartShowcaseMode] = useState(false);
@@ -776,9 +776,8 @@ export default function PortfolioShowcase({
       })
       .slice(0, homepageConfig.maxCategories);
   }, [categories, categoryPreviewMode, homepageConfig, items]);
-  const previewNavigationItems = selectedPreviewItems.length ? selectedPreviewItems : displayItems;
   const activeSelectedItem =
-    selectedItem && previewNavigationItems.some(item => getItemKey(item) === getItemKey(selectedItem))
+    selectedItem && displayItems.some(item => getItemKey(item) === getItemKey(selectedItem))
       ? selectedItem
       : null;
   const focusedItem = displayItems.find(item => getItemKey(item) === focusItemKey) || null;
@@ -1019,21 +1018,11 @@ export default function PortfolioShowcase({
     const canPreview = homepageConfig.enablePreviewModal && itemConfig.previewEnabled;
 
     if (canPreview) {
-      setSelectedPreviewItems(displayItems);
       setSelectedItem(item);
       return;
     }
 
     router.push(previewFooterLink);
-  }
-
-  function openCategoryPreview(items: PortfolioPreviewItem[]) {
-    if (!items.length) {
-      return;
-    }
-
-    setSelectedPreviewItems(items);
-    setSelectedItem(items[0]);
   }
 
   return (
@@ -1691,9 +1680,13 @@ export default function PortfolioShowcase({
                     {categoryPreviewGroups.map(group => {
                       const previewItems = group.items.slice(0, homepageConfig.thumbnailsPerCategory);
                       const typeLabel = group.sourceType === 'video' ? 'Video' : 'Graphics';
-                      const featuredPreview = previewItems[0];
+                      const selectedPreviewKey = categoryPreviewSelection[group.key];
+                      const featuredPreview =
+                        previewItems.find(item => getItemKey(item) === selectedPreviewKey) ||
+                        previewItems[0];
                       const thumbnailPreviewItems = previewItems.slice(0, 4);
                       const categoryFocusMatch = focusItemKey === group.key;
+                      const categoryUrl = `/portfolio/category/${group.sourceType === 'graphic' ? 'graphics' : group.sourceType}/${encodeURIComponent(group.slug)}`;
                       const itemPluralLabel = group.sourceType === 'video' ? 'videos' : 'graphics';
                       const accentColor = resolveSectionThemeColor(
                         showcaseStyles?.colors.accentLight || '',
@@ -1706,12 +1699,9 @@ export default function PortfolioShowcase({
                         : 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(241,248,255,0.9))';
                       const mediaSurface = dark ? '#020617' : '#dbeafe';
                       return (
-                        <button
-                          type="button"
+                        <article
                           className="portfolio-showcase-card"
                           key={group.key}
-                          aria-label={`Preview all ${group.count} ${group.title} portfolio item${group.count > 1 ? 's' : ''}`}
-                          onClick={() => openCategoryPreview(group.items)}
                           style={{
                             position: 'relative',
                             display: 'flex',
@@ -1726,8 +1716,6 @@ export default function PortfolioShowcase({
                             padding: 0,
                             borderRadius: isMobile ? 22 : 28,
                             overflow: 'hidden',
-                            textAlign: 'left',
-                            cursor: 'pointer',
                             color: text,
                             border: `1px solid ${
                               categoryFocusMatch ? accentColor : soft
@@ -1893,8 +1881,16 @@ export default function PortfolioShowcase({
                             }}
                           >
                             {thumbnailPreviewItems.map(item => (
-                              <span
+                              <button
+                                type="button"
                                 key={getItemKey(item)}
+                                aria-label={`Show ${item.title} in the ${group.title} preview`}
+                                onClick={() =>
+                                  setCategoryPreviewSelection(current => ({
+                                    ...current,
+                                    [group.key]: getItemKey(item),
+                                  }))
+                                }
                                 style={{
                                   position: 'relative',
                                   width: '100%',
@@ -1903,9 +1899,11 @@ export default function PortfolioShowcase({
                                   aspectRatio: '1 / 1',
                                   borderRadius: 12,
                                   overflow: 'hidden',
+                                  padding: 0,
+                                  cursor: 'pointer',
                                   border: dark
-                                    ? '1px solid rgba(148,163,184,0.18)'
-                                    : '1px solid rgba(148,163,184,0.28)',
+                                    ? `1px solid ${getItemKey(item) === getItemKey(featuredPreview) ? accentColor : 'rgba(148,163,184,0.18)'}`
+                                    : `1px solid ${getItemKey(item) === getItemKey(featuredPreview) ? accentColor : 'rgba(148,163,184,0.28)'}`,
                                   background:
                                     item.sourceType === 'graphic'
                                       ? dark
@@ -1933,7 +1931,7 @@ export default function PortfolioShowcase({
                                     padding: item.sourceType === 'graphic' ? 4 : 0,
                                   }}
                                 />
-                              </span>
+                              </button>
                             ))}
                           </div>
 
@@ -1988,20 +1986,22 @@ export default function PortfolioShowcase({
                               >
                                 {group.count} {itemPluralLabel}
                               </span>
-                              <span
-                                aria-label={`Preview all ${group.count} items`}
+                              <Link
+                                href={categoryUrl}
+                                aria-label={`Open all ${group.count} ${group.title} portfolio items`}
                                 style={{
                                   flex: '0 0 auto',
                                   color: accentColor,
                                   fontSize: 14,
                                   lineHeight: 1,
+                                  textDecoration: 'none',
                                 }}
                               >
                                 Preview all →
-                              </span>
+                              </Link>
                             </div>
                           </div>
-                        </button>
+                        </article>
                       );
                     })}
                   </div>
@@ -3143,11 +3143,8 @@ export default function PortfolioShowcase({
         }
         item={activeSelectedItem}
         itemMetaConfig={itemMetaConfig}
-        items={previewNavigationItems}
-        onClose={() => {
-          setSelectedItem(null);
-          setSelectedPreviewItems([]);
-        }}
+        items={displayItems}
+        onClose={() => setSelectedItem(null)}
         onSelect={setSelectedItem}
       />
     </>
