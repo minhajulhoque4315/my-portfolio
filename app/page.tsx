@@ -1,56 +1,38 @@
-import { createClient } from '@supabase/supabase-js';
 import { connection } from 'next/server';
 import HomePageClient from '@/components/home/HomePageClient';
 import { getAboutSystemConfig } from '@/lib/about-content';
 import { getGlobalFooterConfig } from '@/lib/footer-content';
 import { getHomepageBuilderConfig } from '@/lib/homepage-content';
-import { toSettingMap, type SettingRow } from '@/lib/hero-settings';
+import { type SettingMap } from '@/lib/hero-settings';
 import {
   DEFAULT_HOMEPAGE_PORTFOLIO_SETTINGS,
   DEFAULT_PORTFOLIO_PAGE_SETTINGS,
-  fetchPortfolioDataset,
   getHomepagePortfolioSettings,
   getPortfolioPageSettings,
   parsePortfolioItemMetaConfig,
   PORTFOLIO_ITEM_META_SETTING_KEY,
-  type PortfolioCategory,
-  type PortfolioGraphic,
-  type PortfolioVideo,
 } from '@/lib/portfolio-content';
+import { getServerSettingMap } from '@/lib/server-site-settings';
+import { getServerPortfolioDataset } from '@/lib/server-portfolio-data';
 
 type HomepageInitialData = {
-  settingsRows: SettingRow[];
-  videos: PortfolioVideo[];
-  graphics: PortfolioGraphic[];
-  categories: PortfolioCategory[];
+  settings: SettingMap;
+  videos: Awaited<ReturnType<typeof getServerPortfolioDataset>>['videos'];
+  graphics: Awaited<ReturnType<typeof getServerPortfolioDataset>>['graphics'];
+  categories: Awaited<ReturnType<typeof getServerPortfolioDataset>>['categories'];
 };
 
 async function getHomepageInitialData(): Promise<HomepageInitialData> {
   await connection();
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return {
-      settingsRows: [],
-      videos: [],
-      graphics: [],
-      categories: [],
-    };
-  }
-
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
-    const [{ data: settingsRows }, dataset] = await Promise.all([
-      supabase.from('site_settings').select('key, value'),
-      fetchPortfolioDataset(supabase),
+    const [settings, dataset] = await Promise.all([
+      getServerSettingMap(),
+      getServerPortfolioDataset(),
     ]);
 
     return {
-      settingsRows: ((settingsRows || []) as SettingRow[]),
+      settings,
       videos: dataset.videos,
       graphics: dataset.graphics,
       categories: dataset.categories,
@@ -61,7 +43,7 @@ async function getHomepageInitialData(): Promise<HomepageInitialData> {
     }
 
     return {
-      settingsRows: [],
+      settings: {},
       videos: [],
       graphics: [],
       categories: [],
@@ -70,8 +52,7 @@ async function getHomepageInitialData(): Promise<HomepageInitialData> {
 }
 
 export default async function HomePage() {
-  const { settingsRows, videos, graphics, categories } = await getHomepageInitialData();
-  const map = toSettingMap(settingsRows);
+  const { settings: map, videos, graphics, categories } = await getHomepageInitialData();
   const projectCount = videos.length + graphics.length;
   const runtimeStats = {
     projectCount,
@@ -109,10 +90,10 @@ export default async function HomePage() {
       portfolioGraphics={graphics}
       portfolioCategories={categories}
       homepagePortfolioSettings={
-        settingsRows.length > 0 ? getHomepagePortfolioSettings(map) : DEFAULT_HOMEPAGE_PORTFOLIO_SETTINGS
+        Object.keys(map).length > 0 ? getHomepagePortfolioSettings(map) : DEFAULT_HOMEPAGE_PORTFOLIO_SETTINGS
       }
       portfolioPageSettings={
-        settingsRows.length > 0 ? getPortfolioPageSettings(map) : DEFAULT_PORTFOLIO_PAGE_SETTINGS
+        Object.keys(map).length > 0 ? getPortfolioPageSettings(map) : DEFAULT_PORTFOLIO_PAGE_SETTINGS
       }
       portfolioItemMetaConfig={parsePortfolioItemMetaConfig(
         map[PORTFOLIO_ITEM_META_SETTING_KEY]

@@ -1,12 +1,13 @@
 import { cache } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { unstable_cache } from 'next/cache';
 import { getGlobalSettingsConfig } from '@/lib/global-settings';
 import { toSettingMap, type SettingMap } from '@/lib/hero-settings';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const getServerSettingMap = cache(async (): Promise<SettingMap> => {
+const getCachedServerSettingMap = unstable_cache(async (): Promise<SettingMap> => {
   if (!supabaseUrl || !supabaseAnonKey) {
     return {};
   }
@@ -20,7 +21,9 @@ export const getServerSettingMap = cache(async (): Promise<SettingMap> => {
   } catch {
     return {};
   }
-});
+}, ['public-site-settings'], { revalidate: 30 });
+
+export const getServerSettingMap = cache(getCachedServerSettingMap);
 
 export const getServerGlobalSettings = cache(async () => {
   const map = await getServerSettingMap();

@@ -239,6 +239,18 @@ export default function HomePageClient({
     };
   }, []);
 
+  useEffect(() => {
+    const prefetchPortfolio = () => router.prefetch('/portfolio');
+    const idleCallback = window.requestIdleCallback?.(prefetchPortfolio, { timeout: 2000 });
+
+    if (idleCallback === undefined) {
+      const timer = window.setTimeout(prefetchPortfolio, 800);
+      return () => window.clearTimeout(timer);
+    }
+
+    return () => window.cancelIdleCallback?.(idleCallback);
+  }, [router]);
+
   const allPortfolioItems: PortfolioPreviewItem[] = useMemo(
     () =>
       toPortfolioPreviewItems(
