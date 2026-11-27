@@ -2349,48 +2349,97 @@ export default function PortfolioShowcase({
                                 }}
                               >
                                 {item.imageUrl && item.sourceType === 'graphic' ? (
-                                  <Image
-                                    src={item.imageUrl}
-                                    alt={item.title}
-                                    fill
-                                    sizes={cardImageSizes}
-                                    quality={72}
-                                    style={{
-                                      width: '100%',
-                                      maxWidth: '100%',
-                                      objectFit: geminiCardLook ? 'cover' : 'contain',
-                                      objectPosition: 'center',
-                                      padding: geminiCardLook ? 0 : isMobile ? 6 : 10,
-                                      margin: '0 auto',
-                                      transform: isMobile
-                                        ? 'scale(1)'
-                                        : showHoverOverlay && focusMatch
-                                          ? 'scale(1.025)'
-                                          : 'scale(1)',
-                                      transition: 'transform 0.32s ease',
-                                    }}
-                                  />
-                                ) : item.imageUrl ? (
-                                  <Image
-                                    src={item.imageUrl}
-                                    alt={item.title}
-                                    fill
-                                    sizes={cardImageSizes}
-                                    quality={72}
-                                    style={{
-                                      width: '100%',
-                                      maxWidth: '100%',
-                                      objectFit: geminiCardLook ? 'cover' : mediaObjectFit,
-                                      objectPosition: 'center',
-                                      transform:
-                                        isMobile
+                                  geminiCardLook ? (
+                                    <img
+                                      src={item.imageUrl}
+                                      alt={item.title}
+                                      loading="lazy"
+                                      decoding="async"
+                                      style={{
+                                        position: 'relative',
+                                        display: 'block',
+                                        width: '100%',
+                                        height: 'auto',
+                                        maxWidth: '100%',
+                                        objectFit: 'cover',
+                                        objectPosition: 'center',
+                                        transform: isMobile
                                           ? 'scale(1)'
                                           : showHoverOverlay && focusMatch
-                                            ? 'scale(1.04)'
+                                            ? 'scale(1.025)'
                                             : 'scale(1)',
-                                      transition: 'transform 0.32s ease',
-                                    }}
-                                  />
+                                        transition: 'transform 0.32s ease',
+                                      }}
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={item.imageUrl}
+                                      alt={item.title}
+                                      fill
+                                      sizes={cardImageSizes}
+                                      quality={72}
+                                      style={{
+                                        width: '100%',
+                                        maxWidth: '100%',
+                                        objectFit: 'contain',
+                                        objectPosition: 'center',
+                                        padding: isMobile ? 6 : 10,
+                                        margin: '0 auto',
+                                        transform: isMobile
+                                          ? 'scale(1)'
+                                          : showHoverOverlay && focusMatch
+                                            ? 'scale(1.025)'
+                                            : 'scale(1)',
+                                        transition: 'transform 0.32s ease',
+                                      }}
+                                    />
+                                  )
+                                ) : item.imageUrl ? (
+                                  geminiCardLook ? (
+                                    <img
+                                      src={item.imageUrl}
+                                      alt={item.title}
+                                      loading="lazy"
+                                      decoding="async"
+                                      style={{
+                                        position: 'relative',
+                                        display: 'block',
+                                        width: '100%',
+                                        height: 'auto',
+                                        maxWidth: '100%',
+                                        objectFit: 'cover',
+                                        objectPosition: 'center',
+                                        transform:
+                                          isMobile
+                                            ? 'scale(1)'
+                                            : showHoverOverlay && focusMatch
+                                              ? 'scale(1.04)'
+                                              : 'scale(1)',
+                                        transition: 'transform 0.32s ease',
+                                      }}
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={item.imageUrl}
+                                      alt={item.title}
+                                      fill
+                                      sizes={cardImageSizes}
+                                      quality={72}
+                                      style={{
+                                        width: '100%',
+                                        maxWidth: '100%',
+                                        objectFit: mediaObjectFit,
+                                        objectPosition: 'center',
+                                        transform:
+                                          isMobile
+                                            ? 'scale(1)'
+                                            : showHoverOverlay && focusMatch
+                                              ? 'scale(1.04)'
+                                              : 'scale(1)',
+                                        transition: 'transform 0.32s ease',
+                                      }}
+                                    />
+                                  )
                                 ) : null}
                                 {geminiCardLook && item.sourceType === 'video' ? (
                                   <div
