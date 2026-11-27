@@ -422,6 +422,7 @@ export default function PortfolioShowcase({
   });
   const [selectedItem, setSelectedItem] = useState<PortfolioPreviewItem | null>(null);
   const [categoryPreviewSelection, setCategoryPreviewSelection] = useState<Record<string, string>>({});
+  const [categoryPreviewPage, setCategoryPreviewPage] = useState<Record<string, number>>({});
   const [focusItemKey, setFocusItemKey] = useState('');
   const [hoverPreviewKey, setHoverPreviewKey] = useState('');
   const [smartShowcaseMode, setSmartShowcaseMode] = useState(false);
@@ -1678,13 +1679,22 @@ export default function PortfolioShowcase({
                     }}
                   >
                     {categoryPreviewGroups.map(group => {
-                      const previewItems = group.items.slice(0, homepageConfig.thumbnailsPerCategory);
+                      const thumbnailPageSize = 4;
+                      const totalThumbnailPages = Math.ceil(group.items.length / thumbnailPageSize);
+                      const activeThumbnailPage = Math.min(
+                        categoryPreviewPage[group.key] || 0,
+                        Math.max(0, totalThumbnailPages - 1)
+                      );
+                      const thumbnailStart = activeThumbnailPage * thumbnailPageSize;
                       const typeLabel = group.sourceType === 'video' ? 'Video' : 'Graphics';
                       const selectedPreviewKey = categoryPreviewSelection[group.key];
                       const featuredPreview =
-                        previewItems.find(item => getItemKey(item) === selectedPreviewKey) ||
-                        previewItems[0];
-                      const thumbnailPreviewItems = previewItems.slice(0, 4);
+                        group.items.find(item => getItemKey(item) === selectedPreviewKey) ||
+                        group.items[0];
+                      const thumbnailPreviewItems = group.items.slice(
+                        thumbnailStart,
+                        thumbnailStart + thumbnailPageSize
+                      );
                       const categoryFocusMatch = focusItemKey === group.key;
                       const categoryUrl = `/portfolio/category/${group.sourceType === 'graphic' ? 'graphics' : group.sourceType}/${encodeURIComponent(group.slug)}`;
                       const itemPluralLabel = group.sourceType === 'video' ? 'videos' : 'graphics';
@@ -1986,6 +1996,78 @@ export default function PortfolioShowcase({
                               >
                                 {group.count} {itemPluralLabel}
                               </span>
+                              {totalThumbnailPages > 1 ? (
+                                <div
+                                  aria-label={`${thumbnailStart + 1} to ${Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} of ${group.items.length} previews`}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    color: muted,
+                                    fontSize: 11,
+                                    fontWeight: 800,
+                                  }}
+                                >
+                                  <button
+                                    type="button"
+                                    aria-label={`Show previous ${group.title} previews`}
+                                    onClick={() => {
+                                      const nextPage =
+                                        (activeThumbnailPage - 1 + totalThumbnailPages) % totalThumbnailPages;
+                                      const nextItem = group.items[nextPage * thumbnailPageSize];
+                                      setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
+                                      if (nextItem) {
+                                        setCategoryPreviewSelection(current => ({
+                                          ...current,
+                                          [group.key]: getItemKey(nextItem),
+                                        }));
+                                      }
+                                    }}
+                                    style={{
+                                      width: 28,
+                                      height: 28,
+                                      borderRadius: 9,
+                                      border: `1px solid ${soft}`,
+                                      background: dark ? 'rgba(15,23,42,0.72)' : 'rgba(255,255,255,0.82)',
+                                      color: text,
+                                      cursor: 'pointer',
+                                      fontWeight: 900,
+                                      lineHeight: 1,
+                                    }}
+                                  >
+                                    ←
+                                  </button>
+                                  <span>{thumbnailStart + 1}–{Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} / {group.items.length}</span>
+                                  <button
+                                    type="button"
+                                    aria-label={`Show next ${group.title} previews`}
+                                    onClick={() => {
+                                      const nextPage = (activeThumbnailPage + 1) % totalThumbnailPages;
+                                      const nextItem = group.items[nextPage * thumbnailPageSize];
+                                      setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
+                                      if (nextItem) {
+                                        setCategoryPreviewSelection(current => ({
+                                          ...current,
+                                          [group.key]: getItemKey(nextItem),
+                                        }));
+                                      }
+                                    }}
+                                    style={{
+                                      width: 28,
+                                      height: 28,
+                                      borderRadius: 9,
+                                      border: `1px solid ${soft}`,
+                                      background: dark ? 'rgba(15,23,42,0.72)' : 'rgba(255,255,255,0.82)',
+                                      color: text,
+                                      cursor: 'pointer',
+                                      fontWeight: 900,
+                                      lineHeight: 1,
+                                    }}
+                                  >
+                                    →
+                                  </button>
+                                </div>
+                              ) : null}
                               <Link
                                 href={categoryUrl}
                                 aria-label={`Open all ${group.count} ${group.title} portfolio items`}
