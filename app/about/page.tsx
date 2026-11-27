@@ -148,6 +148,20 @@ export default function AboutPage() {
     .filter(section => section.enabled)
     .sort((a, b) => a.order - b.order);
   const aboutExperienceItems = getVisibleExperienceItems(aboutSystem.experience, 'about');
+  const introSectionId = sections.find(section =>
+    section.description?.includes('Md. Minhajul Hoque')
+  )?.id;
+
+  function getSectionDescription(section: AboutPageSectionConfig) {
+    if (!section.description || section.id !== introSectionId) {
+      return section.description;
+    }
+
+    return section.description.replace(
+      'Md. Minhajul Hoque',
+      'Md. Minhajul Hoque (বাংলায়: মোঃ মিনহাজুল হক)'
+    );
+  }
 
   function sectionTextAlign(section: AboutPageSectionConfig) {
     return section.alignment;
@@ -394,7 +408,7 @@ export default function AboutPage() {
                 {section.subtitle}
               </div>
             ) : null}
-            {section.description ? (
+            {getSectionDescription(section) ? (
               <p
                 style={{
                   color: muted,
@@ -411,7 +425,7 @@ export default function AboutPage() {
                   }),
                 }}
               >
-                {section.description}
+                {getSectionDescription(section)}
               </p>
             ) : null}
             {renderButtons(section)}
@@ -565,7 +579,7 @@ export default function AboutPage() {
               {section.title}
             </h2>
             {section.subtitle ? <p style={{ color: accent, fontWeight: 800, margin: '0 0 16px' }}>{section.subtitle}</p> : null}
-            {section.description ? <p style={{ color: muted, fontSize: 15, lineHeight: 1.85, margin: 0 }}>{section.description}</p> : null}
+            {getSectionDescription(section) ? <p style={{ color: muted, fontSize: 15, lineHeight: 1.85, margin: 0 }}>{getSectionDescription(section)}</p> : null}
           </div>
         </div>
       </section>
@@ -593,9 +607,9 @@ export default function AboutPage() {
           <h2 style={{ color: text, fontSize: isMobile ? 32 : 52, letterSpacing: '-0.06em', lineHeight: 1, margin: '0 0 16px' }}>
             {section.title}
           </h2>
-          {section.description ? (
+          {getSectionDescription(section) ? (
             <p style={{ color: muted, maxWidth: 620, margin: section.alignment === 'center' ? '0 auto 28px' : '0 0 28px', lineHeight: 1.75, fontSize: 15 }}>
-              {section.description}
+              {getSectionDescription(section)}
             </p>
           ) : null}
           {renderButtons(section)}
