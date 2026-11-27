@@ -1086,20 +1086,6 @@ export default function PortfolioShowcase({
               pointerEvents: 'none',
             }}
           />
-          {focusedItem ? (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: `linear-gradient(135deg, rgba(2,6,23,0.78), rgba(2,6,23,0.42)), url(${focusedItem.imageUrl}) center/cover no-repeat`,
-                opacity: 0.22,
-                filter: 'blur(18px)',
-                transform: 'scale(1.08)',
-                pointerEvents: 'none',
-              }}
-            />
-          ) : null}
-
           <div
             style={{
               position: 'relative',
