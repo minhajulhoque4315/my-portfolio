@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
-import { fetchPortfolioDataset, getPortfolioItemDetailPath, toPortfolioPreviewItems } from '@/lib/portfolio-content';
+import { getPortfolioItemDetailPath, toPortfolioPreviewItems } from '@/lib/portfolio-content';
+import { getServerPortfolioDataset } from '@/lib/server-portfolio-data';
 
 const srOnly: React.CSSProperties = {
   position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
@@ -37,11 +37,7 @@ export function CrawlableTutorialContent() {
 }
 
 export async function CrawlablePortfolioContent() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  const dataset = await fetchPortfolioDataset(client);
+  const dataset = await getServerPortfolioDataset();
   const items = toPortfolioPreviewItems(dataset.videos, dataset.graphics, dataset.categories)
     .filter(item => item.visible && item.categoryActive && item.categoryShowOnPortfolio);
   return <section style={srOnly} aria-label="Portfolio projects">
