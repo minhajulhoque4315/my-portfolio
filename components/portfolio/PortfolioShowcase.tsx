@@ -1876,6 +1876,96 @@ export default function PortfolioShowcase({
                                 {group.count}
                               </span>
                             </div>
+                            {totalThumbnailPages > 1 ? (
+                              <div
+                                aria-label={`${thumbnailStart + 1} to ${Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} of ${group.items.length} previews`}
+                                style={{
+                                  position: 'absolute',
+                                  left: 12,
+                                  right: 12,
+                                  top: '50%',
+                                  transform: 'translateY(-50%)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  pointerEvents: 'none',
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  aria-label={`Show previous ${group.title} previews`}
+                                  onClick={() => {
+                                    const nextPage =
+                                      (activeThumbnailPage - 1 + totalThumbnailPages) % totalThumbnailPages;
+                                    const nextItem = group.items[nextPage * thumbnailPageSize];
+                                    setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
+                                    if (nextItem) {
+                                      setCategoryPreviewSelection(current => ({
+                                        ...current,
+                                        [group.key]: getItemKey(nextItem),
+                                      }));
+                                    }
+                                  }}
+                                  style={{
+                                    width: 42,
+                                    height: 42,
+                                    borderRadius: 999,
+                                    border: `1px solid ${soft}`,
+                                    background: dark ? 'rgba(2,6,23,0.78)' : 'rgba(255,255,255,0.9)',
+                                    color: text,
+                                    cursor: 'pointer',
+                                    fontSize: 18,
+                                    fontWeight: 900,
+                                    lineHeight: 1,
+                                    pointerEvents: 'auto',
+                                  }}
+                                >
+                                  ←
+                                </button>
+                                <span
+                                  style={{
+                                    padding: '7px 10px',
+                                    borderRadius: 999,
+                                    background: dark ? 'rgba(2,6,23,0.78)' : 'rgba(255,255,255,0.9)',
+                                    color: text,
+                                    fontSize: 11,
+                                    fontWeight: 900,
+                                  }}
+                                >
+                                  {thumbnailStart + 1}–{Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} / {group.items.length}
+                                </span>
+                                <button
+                                  type="button"
+                                  aria-label={`Show next ${group.title} previews`}
+                                  onClick={() => {
+                                    const nextPage = (activeThumbnailPage + 1) % totalThumbnailPages;
+                                    const nextItem = group.items[nextPage * thumbnailPageSize];
+                                    setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
+                                    if (nextItem) {
+                                      setCategoryPreviewSelection(current => ({
+                                        ...current,
+                                        [group.key]: getItemKey(nextItem),
+                                      }));
+                                    }
+                                  }}
+                                  style={{
+                                    width: 42,
+                                    height: 42,
+                                    borderRadius: 999,
+                                    border: `1px solid ${soft}`,
+                                    background: dark ? 'rgba(2,6,23,0.78)' : 'rgba(255,255,255,0.9)',
+                                    color: text,
+                                    cursor: 'pointer',
+                                    fontSize: 18,
+                                    fontWeight: 900,
+                                    lineHeight: 1,
+                                    pointerEvents: 'auto',
+                                  }}
+                                >
+                                  →
+                                </button>
+                              </div>
+                            ) : null}
                           </div>
 
                           <div
@@ -1996,78 +2086,6 @@ export default function PortfolioShowcase({
                               >
                                 {group.count} {itemPluralLabel}
                               </span>
-                              {totalThumbnailPages > 1 ? (
-                                <div
-                                  aria-label={`${thumbnailStart + 1} to ${Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} of ${group.items.length} previews`}
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    color: muted,
-                                    fontSize: 11,
-                                    fontWeight: 800,
-                                  }}
-                                >
-                                  <button
-                                    type="button"
-                                    aria-label={`Show previous ${group.title} previews`}
-                                    onClick={() => {
-                                      const nextPage =
-                                        (activeThumbnailPage - 1 + totalThumbnailPages) % totalThumbnailPages;
-                                      const nextItem = group.items[nextPage * thumbnailPageSize];
-                                      setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
-                                      if (nextItem) {
-                                        setCategoryPreviewSelection(current => ({
-                                          ...current,
-                                          [group.key]: getItemKey(nextItem),
-                                        }));
-                                      }
-                                    }}
-                                    style={{
-                                      width: 28,
-                                      height: 28,
-                                      borderRadius: 9,
-                                      border: `1px solid ${soft}`,
-                                      background: dark ? 'rgba(15,23,42,0.72)' : 'rgba(255,255,255,0.82)',
-                                      color: text,
-                                      cursor: 'pointer',
-                                      fontWeight: 900,
-                                      lineHeight: 1,
-                                    }}
-                                  >
-                                    ←
-                                  </button>
-                                  <span>{thumbnailStart + 1}–{Math.min(thumbnailStart + thumbnailPreviewItems.length, group.items.length)} / {group.items.length}</span>
-                                  <button
-                                    type="button"
-                                    aria-label={`Show next ${group.title} previews`}
-                                    onClick={() => {
-                                      const nextPage = (activeThumbnailPage + 1) % totalThumbnailPages;
-                                      const nextItem = group.items[nextPage * thumbnailPageSize];
-                                      setCategoryPreviewPage(current => ({ ...current, [group.key]: nextPage }));
-                                      if (nextItem) {
-                                        setCategoryPreviewSelection(current => ({
-                                          ...current,
-                                          [group.key]: getItemKey(nextItem),
-                                        }));
-                                      }
-                                    }}
-                                    style={{
-                                      width: 28,
-                                      height: 28,
-                                      borderRadius: 9,
-                                      border: `1px solid ${soft}`,
-                                      background: dark ? 'rgba(15,23,42,0.72)' : 'rgba(255,255,255,0.82)',
-                                      color: text,
-                                      cursor: 'pointer',
-                                      fontWeight: 900,
-                                      lineHeight: 1,
-                                    }}
-                                  >
-                                    →
-                                  </button>
-                                </div>
-                              ) : null}
                               <Link
                                 href={categoryUrl}
                                 aria-label={`Open all ${group.count} ${group.title} portfolio items`}
