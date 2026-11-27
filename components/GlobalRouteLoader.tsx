@@ -52,15 +52,7 @@ export default function GlobalRouteLoader({ images, loader, mode }: GlobalRouteL
       return undefined;
     }
 
-    const initialTimer = window.setTimeout(() => {
-      startedAt.current = performance.now();
-      setVisible(true);
-      maxTimer.current = window.setTimeout(() => setVisible(false), 6500);
-    }, 0);
-
     function clearTimers() {
-      window.clearTimeout(initialTimer);
-
       if (hideTimer.current) {
         window.clearTimeout(hideTimer.current);
         hideTimer.current = null;

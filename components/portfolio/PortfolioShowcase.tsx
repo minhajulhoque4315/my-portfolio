@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import Image from 'next/image';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import PortfolioPreviewModal from '@/components/portfolio/PortfolioPreviewModal';
@@ -423,12 +424,19 @@ export default function PortfolioShowcase({
   const [focusItemKey, setFocusItemKey] = useState('');
   const [hoverPreviewKey, setHoverPreviewKey] = useState('');
   const [smartShowcaseMode, setSmartShowcaseMode] = useState(false);
+  const hoverPreviewTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const syncViewport = () => setViewportWidth(window.innerWidth);
     syncViewport();
     window.addEventListener('resize', syncViewport);
     return () => window.removeEventListener('resize', syncViewport);
+  }, []);
+
+  useEffect(() => () => {
+    if (hoverPreviewTimer.current) {
+      window.clearTimeout(hoverPreviewTimer.current);
+    }
   }, []);
 
   const sectionTitle =
@@ -2170,6 +2178,11 @@ export default function PortfolioShowcase({
                                   : '60%';
                         const mobileMediaHeight =
                           viewportWidth <= 640 ? (leadCard ? 240 : 220) : leadCard ? 180 : 170;
+                        const cardImageSizes = isMobile
+                          ? 'calc(50vw - 24px)'
+                          : leadCard
+                            ? '(max-width: 1080px) 50vw, 66vw'
+                            : '(max-width: 1080px) 50vw, 33vw';
                         const masonryVideoHeight =
                           variant === 'homepage'
                             ? isMobile
@@ -2185,11 +2198,6 @@ export default function PortfolioShowcase({
                           : dark
                             ? '#020617'
                             : '#e2e8f0';
-                        const masonryGraphicMaxHeight = geminiCardLook
-                          ? undefined
-                          : isMobile
-                            ? 260
-                            : 440;
                         const mediaObjectFit =
                           item.sourceType === 'graphic'
                             ? isMobile ||
@@ -2211,6 +2219,7 @@ export default function PortfolioShowcase({
                           showHoverOverlay &&
                           !isMobile &&
                           focusMatch &&
+                          hoverPreviewKey === focusKey &&
                           item.sourceType === 'video' &&
                           Boolean(item.youtube_url);
 
@@ -2228,18 +2237,25 @@ export default function PortfolioShowcase({
                             aria-busy={navigationPending && navigationItemId === item.id}
                             onMouseEnter={() => {
                               setFocusItemKey(focusKey);
-                              setHoverPreviewKey(focusKey);
-                            }}
-                            onMouseLeave={() =>
-                              {
-                                setHoverPreviewKey(currentKey =>
-                                  currentKey === focusKey ? '' : currentKey
-                                );
-                                setFocusItemKey(currentKey =>
-                                  currentKey === focusKey ? '' : currentKey
-                                );
+                              if (hoverPreviewTimer.current) {
+                                window.clearTimeout(hoverPreviewTimer.current);
                               }
-                            }
+                              hoverPreviewTimer.current = window.setTimeout(() => {
+                                setHoverPreviewKey(focusKey);
+                              }, 450);
+                            }}
+                            onMouseLeave={() => {
+                              if (hoverPreviewTimer.current) {
+                                window.clearTimeout(hoverPreviewTimer.current);
+                                hoverPreviewTimer.current = null;
+                              }
+                              setHoverPreviewKey(currentKey =>
+                                currentKey === focusKey ? '' : currentKey
+                              );
+                              setFocusItemKey(currentKey =>
+                                currentKey === focusKey ? '' : currentKey
+                              );
+                            }}
                             onFocus={() => setFocusItemKey(focusKey)}
                             onBlur={() =>
                               setFocusItemKey(currentKey =>
@@ -2333,21 +2349,15 @@ export default function PortfolioShowcase({
                                 }}
                               >
                                 {item.imageUrl && item.sourceType === 'graphic' ? (
-                                  <img
+                                  <Image
                                     src={item.imageUrl}
                                     alt={item.title}
-                                    loading="lazy"
-                                    decoding="async"
+                                    fill
+                                    sizes={cardImageSizes}
+                                    quality={72}
                                     style={{
-                                      position: geminiCardLook || useDesktopMasonry ? 'relative' : 'absolute',
-                                      inset: geminiCardLook || useDesktopMasonry ? undefined : 0,
-                                      display: 'block',
                                       width: '100%',
-                                      height: geminiCardLook || useDesktopMasonry ? 'auto' : '100%',
                                       maxWidth: '100%',
-                                      maxHeight: useDesktopMasonry
-                                        ? masonryGraphicMaxHeight
-                                        : '100%',
                                       objectFit: geminiCardLook ? 'cover' : 'contain',
                                       objectPosition: 'center',
                                       padding: geminiCardLook ? 0 : isMobile ? 6 : 10,
@@ -2361,17 +2371,14 @@ export default function PortfolioShowcase({
                                     }}
                                   />
                                 ) : item.imageUrl ? (
-                                  <img
+                                  <Image
                                     src={item.imageUrl}
                                     alt={item.title}
-                                    loading="lazy"
-                                    decoding="async"
+                                    fill
+                                    sizes={cardImageSizes}
+                                    quality={72}
                                     style={{
-                                      position: geminiCardLook ? 'relative' : 'absolute',
-                                      inset: geminiCardLook ? undefined : 0,
-                                      display: 'block',
                                       width: '100%',
-                                      height: geminiCardLook ? 'auto' : '100%',
                                       maxWidth: '100%',
                                       objectFit: geminiCardLook ? 'cover' : mediaObjectFit,
                                       objectPosition: 'center',
