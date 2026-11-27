@@ -421,6 +421,7 @@ export default function PortfolioShowcase({
     graphic: 'all',
   });
   const [selectedItem, setSelectedItem] = useState<PortfolioPreviewItem | null>(null);
+  const [selectedPreviewItems, setSelectedPreviewItems] = useState<PortfolioPreviewItem[]>([]);
   const [focusItemKey, setFocusItemKey] = useState('');
   const [hoverPreviewKey, setHoverPreviewKey] = useState('');
   const [smartShowcaseMode, setSmartShowcaseMode] = useState(false);
@@ -775,8 +776,9 @@ export default function PortfolioShowcase({
       })
       .slice(0, homepageConfig.maxCategories);
   }, [categories, categoryPreviewMode, homepageConfig, items]);
+  const previewNavigationItems = selectedPreviewItems.length ? selectedPreviewItems : displayItems;
   const activeSelectedItem =
-    selectedItem && displayItems.some(item => getItemKey(item) === getItemKey(selectedItem))
+    selectedItem && previewNavigationItems.some(item => getItemKey(item) === getItemKey(selectedItem))
       ? selectedItem
       : null;
   const focusedItem = displayItems.find(item => getItemKey(item) === focusItemKey) || null;
@@ -1017,11 +1019,21 @@ export default function PortfolioShowcase({
     const canPreview = homepageConfig.enablePreviewModal && itemConfig.previewEnabled;
 
     if (canPreview) {
+      setSelectedPreviewItems(displayItems);
       setSelectedItem(item);
       return;
     }
 
     router.push(previewFooterLink);
+  }
+
+  function openCategoryPreview(items: PortfolioPreviewItem[]) {
+    if (!items.length) {
+      return;
+    }
+
+    setSelectedPreviewItems(items);
+    setSelectedItem(items[0]);
   }
 
   return (
@@ -1682,7 +1694,6 @@ export default function PortfolioShowcase({
                       const featuredPreview = previewItems[0];
                       const thumbnailPreviewItems = previewItems.slice(0, 4);
                       const categoryFocusMatch = focusItemKey === group.key;
-                      const categoryUrl = `/portfolio/category/${group.sourceType === 'graphic' ? 'graphics' : group.sourceType}/${encodeURIComponent(group.slug)}`;
                       const itemPluralLabel = group.sourceType === 'video' ? 'videos' : 'graphics';
                       const accentColor = resolveSectionThemeColor(
                         showcaseStyles?.colors.accentLight || '',
@@ -1695,11 +1706,12 @@ export default function PortfolioShowcase({
                         : 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(241,248,255,0.9))';
                       const mediaSurface = dark ? '#020617' : '#dbeafe';
                       return (
-                        <Link
+                        <button
+                          type="button"
                           className="portfolio-showcase-card"
                           key={group.key}
-                          href={categoryUrl}
-                          aria-label={`Open ${group.title} category with ${group.count} portfolio item${group.count > 1 ? 's' : ''}`}
+                          aria-label={`Preview all ${group.count} ${group.title} portfolio item${group.count > 1 ? 's' : ''}`}
+                          onClick={() => openCategoryPreview(group.items)}
                           style={{
                             position: 'relative',
                             display: 'flex',
@@ -1714,7 +1726,8 @@ export default function PortfolioShowcase({
                             padding: 0,
                             borderRadius: isMobile ? 22 : 28,
                             overflow: 'hidden',
-                            textDecoration: 'none',
+                            textAlign: 'left',
+                            cursor: 'pointer',
                             color: text,
                             border: `1px solid ${
                               categoryFocusMatch ? accentColor : soft
@@ -1976,7 +1989,7 @@ export default function PortfolioShowcase({
                                 {group.count} {itemPluralLabel}
                               </span>
                               <span
-                                aria-hidden="true"
+                                aria-label={`Preview all ${group.count} items`}
                                 style={{
                                   flex: '0 0 auto',
                                   color: accentColor,
@@ -1984,11 +1997,11 @@ export default function PortfolioShowcase({
                                   lineHeight: 1,
                                 }}
                               >
-                                →
+                                Preview all →
                               </span>
                             </div>
                           </div>
-                        </Link>
+                        </button>
                       );
                     })}
                   </div>
@@ -3130,8 +3143,11 @@ export default function PortfolioShowcase({
         }
         item={activeSelectedItem}
         itemMetaConfig={itemMetaConfig}
-        items={displayItems}
-        onClose={() => setSelectedItem(null)}
+        items={previewNavigationItems}
+        onClose={() => {
+          setSelectedItem(null);
+          setSelectedPreviewItems([]);
+        }}
         onSelect={setSelectedItem}
       />
     </>
