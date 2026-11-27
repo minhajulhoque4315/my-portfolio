@@ -315,7 +315,7 @@ function getSectionMaxWidth(
 function getHomepageShowcaseMaxWidth(settings: HomepagePortfolioSectionSettings) {
   switch (settings.containerWidth) {
     case 'full':
-      return 1360;
+      return '100%';
     case 'wide':
       return 1240;
     case 'normal':
@@ -955,6 +955,16 @@ export default function PortfolioShowcase({
     variant === 'page'
       ? pageShowcaseConfig?.showPreviewIcon ?? true
       : homepageConfig.showPreviewIcon;
+  const showcaseSectionMaxWidth = getShowcaseSectionMaxWidth(
+    variant,
+    homepageConfig,
+    heroStyles?.layout.width || 'default',
+    pageBuilder
+  );
+  const showcaseSectionWidthValue =
+    typeof showcaseSectionMaxWidth === 'number'
+      ? `${showcaseSectionMaxWidth}px`
+      : showcaseSectionMaxWidth;
   const showFeaturedBadge =
     variant === 'page'
       ? pageShowcaseConfig?.showFeaturedBadge ?? true
@@ -1019,23 +1029,9 @@ export default function PortfolioShowcase({
       <section
         className={`portfolio-showcase-section portfolio-showcase-${variant}`}
         style={{
-          ['--portfolio-showcase-max-width' as string]: `${
-            getShowcaseSectionMaxWidth(
-              variant,
-              homepageConfig,
-              heroStyles?.layout.width || 'default',
-              pageBuilder
-            )
-          }px`,
+          ['--portfolio-showcase-max-width' as string]: showcaseSectionWidthValue,
           boxSizing: 'border-box',
-          maxWidth: isMobile
-            ? '100%'
-            : getShowcaseSectionMaxWidth(
-                variant,
-                homepageConfig,
-                heroStyles?.layout.width || 'default',
-                pageBuilder
-              ),
+          maxWidth: isMobile ? '100%' : showcaseSectionMaxWidth,
           margin: '0 auto',
           padding: isMobile
             ? variant === 'page'
