@@ -1,230 +1,35 @@
-'use client';
-
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
-import { useTheme } from '@/components/ThemeProvider';
-import GlobalFooter from '@/components/shared/GlobalFooter';
-import PortfolioShowcase from '@/components/portfolio/PortfolioShowcase';
+import { connection } from 'next/server';
+import PortfolioCategoryPageClient from '@/app/portfolio/category/[type]/[slug]/PortfolioCategoryPageClient';
 import { getGlobalFooterConfig } from '@/lib/footer-content';
-import { toSettingMap } from '@/lib/hero-settings';
-import { createDefaultHomepageBuilderConfig } from '@/lib/homepage-content';
+import { getPortfolioPageBuilderConfig } from '@/lib/portfolio-page-content';
 import {
-  getPortfolioPageBuilderConfig,
-  type PortfolioPageBuilderConfig,
-} from '@/lib/portfolio-page-content';
-import {
-  DEFAULT_PORTFOLIO_PAGE_SETTINGS,
-  fetchPortfolioDataset,
-  getPortfolioCategoryName,
   getPortfolioPageSettings,
   parsePortfolioItemMetaConfig,
   PORTFOLIO_ITEM_META_SETTING_KEY,
   toPortfolioPreviewItems,
-  type PortfolioCategory,
-  type PortfolioItemMetaConfigMap,
-  type PortfolioPageSettings,
-  type PortfolioPreviewItem,
-  type PortfolioSourceType,
 } from '@/lib/portfolio-content';
+import { getServerPortfolioDataset } from '@/lib/server-portfolio-data';
+import { getServerSettingMap } from '@/lib/server-site-settings';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+export default async function PortfolioCategoryPage() {
+  await connection();
 
-function normalizeParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] || '' : value || '';
-}
-
-function normalizeSourceType(value: string): PortfolioSourceType | null {
-  if (value === 'video') {
-    return 'video';
-  }
-
-  if (value === 'graphic' || value === 'graphics') {
-    return 'graphic';
-  }
-
-  return null;
-}
-
-export default function PortfolioCategoryPage() {
-  const params = useParams();
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
-  const typeParam = normalizeParam(params.type);
-  const slugParam = decodeURIComponent(normalizeParam(params.slug));
-  const sourceType = normalizeSourceType(typeParam);
-
-  const [items, setItems] = useState<PortfolioPreviewItem[]>([]);
-  const [categories, setCategories] = useState<PortfolioCategory[]>([]);
-  const [pageSettings, setPageSettings] = useState<PortfolioPageSettings>(
-    DEFAULT_PORTFOLIO_PAGE_SETTINGS
-  );
-  const [pageBuilder, setPageBuilder] = useState<PortfolioPageBuilderConfig>(() =>
-    getPortfolioPageBuilderConfig({})
-  );
-  const [itemMetaConfig, setItemMetaConfig] = useState<PortfolioItemMetaConfigMap>({});
-  const [footerConfig, setFooterConfig] = useState(() => createDefaultHomepageBuilderConfig().footer);
-  const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      const [{ data: settingsRows }, { videos, graphics, categories: categoryRows }] =
-        await Promise.all([
-          supabase.from('site_settings').select('*'),
-          fetchPortfolioDataset(supabase),
-        ]);
-
-      if (settingsRows) {
-        const map = toSettingMap(settingsRows);
-        setPageSettings(getPortfolioPageSettings(map));
-        setPageBuilder(getPortfolioPageBuilderConfig(map));
-        setItemMetaConfig(parsePortfolioItemMetaConfig(map[PORTFOLIO_ITEM_META_SETTING_KEY]));
-        setFooterConfig(
-          getGlobalFooterConfig(map, {
-            projectCount: videos.length + graphics.length,
-          })
-        );
-      }
-
-      setCategories(categoryRows || []);
-      setItems(toPortfolioPreviewItems(videos, graphics, categoryRows || []));
-      setLoading(false);
-    }
-
-    void load();
-
-    const syncMobile = () => setIsMobile(window.innerWidth < 768);
-    syncMobile();
-    window.addEventListener('resize', syncMobile);
-    return () => window.removeEventListener('resize', syncMobile);
-  }, []);
-
-  const categoryItems = useMemo(
-    () =>
-      sourceType
-        ? items.filter(
-            item =>
-              item.visible &&
-              item.categoryActive &&
-              item.categoryShowOnPortfolio &&
-              item.sourceType === sourceType &&
-              item.categorySlug === slugParam
-          )
-        : [],
-    [items, slugParam, sourceType]
-  );
-
-  const categoryTitle =
-    categoryItems[0]?.categoryName || getPortfolioCategoryName(categories, slugParam);
-  const typeLabel = sourceType === 'video' ? 'Video Editing' : 'Graphics Design';
-  const scopedPageSettings: PortfolioPageSettings = {
-    ...pageSettings,
-    title: categoryTitle,
-    subtitle: `Explore ${categoryItems.length} selected works in ${typeLabel}.`,
-    tabs: {
-      all: {
-        ...pageSettings.tabs.all,
-        enabled: false,
-      },
-      video: {
-        ...pageSettings.tabs.video,
-        enabled: sourceType === 'video',
-        label: typeLabel,
-      },
-      graphic: {
-        ...pageSettings.tabs.graphic,
-        enabled: sourceType === 'graphic',
-        label: typeLabel,
-      },
-    },
-    allTab: {
-      ...pageSettings.allTab,
-      showVideos: sourceType === 'video',
-      showGraphics: sourceType === 'graphic',
-    },
-  };
+  const [settings, dataset] = await Promise.all([
+    getServerSettingMap(),
+    getServerPortfolioDataset(),
+  ]);
+  const { videos, graphics, categories } = dataset;
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        width: '100%',
-        maxWidth: '100%',
-        minWidth: 0,
-        boxSizing: 'border-box',
-        overflowX: 'hidden',
-        paddingBottom: 'calc(110px + env(safe-area-inset-bottom))',
-        background: dark ? '#080808' : '#f8fbff',
-        fontFamily: "'Inter', system-ui, sans-serif",
-      }}
-    >
-      {sourceType ? (
-        <PortfolioShowcase
-          variant="page"
-          items={categoryItems}
-          categories={categories.filter(category => category.slug === slugParam)}
-          pageSettings={scopedPageSettings}
-          pageBuilder={{
-            ...pageBuilder,
-            hero: {
-              ...pageBuilder.hero,
-              title: categoryTitle,
-              subtitle: scopedPageSettings.subtitle,
-              badge: typeLabel,
-              showButton: true,
-              buttonText: 'All Portfolio',
-              buttonLink: '/portfolio',
-            },
-          }}
-          itemMetaConfig={itemMetaConfig}
-          loading={loading}
-        />
-      ) : (
-        <section
-          style={{
-            minHeight: '70vh',
-            display: 'grid',
-            placeItems: 'center',
-            color: dark ? '#f8fafc' : '#0f172a',
-            padding: isMobile ? '96px 16px' : '120px 24px',
-            width: '100%',
-            maxWidth: '100%',
-            boxSizing: 'border-box',
-            overflowX: 'hidden',
-          }}
-        >
-          <div style={{ textAlign: 'center', width: '100%', maxWidth: 560, minWidth: 0 }}>
-            <h1 style={{ margin: '0 0 12px', fontSize: 34 }}>Category not found</h1>
-            <p style={{ margin: 0, color: dark ? '#94a3b8' : '#475569' }}>
-              This portfolio category route needs a valid video or graphic type.
-            </p>
-            <a
-              href="/portfolio"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                marginTop: 22,
-                padding: '12px 18px',
-                borderRadius: 14,
-                background: 'linear-gradient(135deg, #2563eb, #0ea5e9)',
-                color: '#fff',
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 800,
-              }}
-            >
-              All Portfolio <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
-      )}
-      <GlobalFooter config={footerConfig} isMobile={isMobile} />
-    </main>
+    <PortfolioCategoryPageClient
+      initialItems={toPortfolioPreviewItems(videos, graphics, categories)}
+      initialCategories={categories}
+      initialPageSettings={getPortfolioPageSettings(settings)}
+      initialPageBuilder={getPortfolioPageBuilderConfig(settings)}
+      initialItemMetaConfig={parsePortfolioItemMetaConfig(settings[PORTFOLIO_ITEM_META_SETTING_KEY])}
+      initialFooterConfig={getGlobalFooterConfig(settings, {
+        projectCount: videos.length + graphics.length,
+      })}
+    />
   );
 }
